@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://6k21p1w33pbf"]
+
+[ext_resource type="Texture2D" uid="uid://dc3kdaf744oje" path="res://resources/piece.png" id="1_gebih"]
+[ext_resource type="Script" uid="uid://g3hxerqwbpfn" path="res://scenes/piece.gd" id="1_s58gp"]
+
+[node name="piece" type="CharacterBody2D"]
+collision_mask = 2
+script = ExtResource("1_s58gp")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(4, 4)
+texture = ExtResource("1_gebih")
+centered = false
