@@ -1,8 +1,9 @@
-[gd_scene load_steps=9 format=4 uid="uid://dsjhjor50obpr"]
+[gd_scene load_steps=18 format=4 uid="uid://dsjhjor50obpr"]
 
 [ext_resource type="Script" uid="uid://c7lkh65nnxbq7" path="res://scenes/grid_level.gd" id="1_6vi3e"]
 [ext_resource type="Texture2D" uid="uid://b7jc613nb4upx" path="res://resources/env/mtiles.png" id="2_q2a55"]
 [ext_resource type="PackedScene" uid="uid://6k21p1w33pbf" path="res://scenes/piece.tscn" id="2_rb7e7"]
+[ext_resource type="Script" uid="uid://dlji4mlapi7i3" path="res://scenes/ability_bar.gd" id="4_k66n8"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_q2a55"]
 vertices = PackedVector2Array(8, 8, -8, 8, -8, -8, 8, -8)
@@ -28,6 +29,38 @@ texture = ExtResource("2_q2a55")
 physics_layer_0/collision_layer = 2
 sources/0 = SubResource("TileSetAtlasSource_mg5yc")
 
+[sub_resource type="InputEventKey" id="InputEventKey_q2a55"]
+device = -1
+keycode = 81
+unicode = 113
+
+[sub_resource type="Shortcut" id="Shortcut_k66n8"]
+events = [SubResource("InputEventKey_q2a55")]
+
+[sub_resource type="InputEventKey" id="InputEventKey_uxptx"]
+device = -1
+keycode = 87
+unicode = 119
+
+[sub_resource type="Shortcut" id="Shortcut_mg5yc"]
+events = [SubResource("InputEventKey_uxptx")]
+
+[sub_resource type="InputEventKey" id="InputEventKey_yxi66"]
+device = -1
+keycode = 69
+unicode = 101
+
+[sub_resource type="Shortcut" id="Shortcut_vxsa8"]
+events = [SubResource("InputEventKey_yxi66")]
+
+[sub_resource type="InputEventKey" id="InputEventKey_gyror"]
+device = -1
+keycode = 82
+unicode = 114
+
+[sub_resource type="Shortcut" id="Shortcut_0utgr"]
+events = [SubResource("InputEventKey_gyror")]
+
 [node name="GridLevel" type="Node2D"]
 script = ExtResource("1_6vi3e")
 
@@ -44,3 +77,72 @@ tile_set = SubResource("TileSet_yxi66")
 
 [node name="piece" parent="." instance=ExtResource("2_rb7e7")]
 position = Vector2(340, 182)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="AbilityBar" type="Control" parent="CanvasLayer" groups=["ability_bar"]]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("4_k66n8")
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/AbilityBar"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_top = -40.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/margin_bottom = 15
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/AbilityBar/MarginContainer"]
+layout_mode = 2
+
+[node name="QButton" type="Button" parent="CanvasLayer/AbilityBar/MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(25, 0)
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 16
+toggle_mode = true
+shortcut = SubResource("Shortcut_k66n8")
+text = "Q"
+
+[node name="WButton" type="Button" parent="CanvasLayer/AbilityBar/MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(25, 0)
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 16
+toggle_mode = true
+shortcut = SubResource("Shortcut_mg5yc")
+text = "W"
+
+[node name="EButton" type="Button" parent="CanvasLayer/AbilityBar/MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(25, 0)
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 16
+toggle_mode = true
+shortcut = SubResource("Shortcut_vxsa8")
+text = "E"
+
+[node name="RButton" type="Button" parent="CanvasLayer/AbilityBar/MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(25, 0)
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 16
+toggle_mode = true
+shortcut = SubResource("Shortcut_0utgr")
+text = "R"
+
+[connection signal="toggled" from="CanvasLayer/AbilityBar/MarginContainer/HBoxContainer/QButton" to="CanvasLayer/AbilityBar" method="_on_q_button_toggled"]
+[connection signal="toggled" from="CanvasLayer/AbilityBar/MarginContainer/HBoxContainer/WButton" to="CanvasLayer/AbilityBar" method="_on_w_button_toggled"]
+[connection signal="toggled" from="CanvasLayer/AbilityBar/MarginContainer/HBoxContainer/EButton" to="CanvasLayer/AbilityBar" method="_on_e_button_toggled"]
+[connection signal="toggled" from="CanvasLayer/AbilityBar/MarginContainer/HBoxContainer/RButton" to="CanvasLayer/AbilityBar" method="_on_r_button_toggled"]
+
+[editable path="piece"]

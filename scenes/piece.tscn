@@ -1,7 +1,10 @@
-[gd_scene load_steps=3 format=3 uid="uid://6k21p1w33pbf"]
+[gd_scene load_steps=6 format=3 uid="uid://6k21p1w33pbf"]
 
 [ext_resource type="Texture2D" uid="uid://dc3kdaf744oje" path="res://resources/piece.png" id="1_gebih"]
 [ext_resource type="Script" uid="uid://g3hxerqwbpfn" path="res://scenes/piece.gd" id="1_s58gp"]
+[ext_resource type="Script" uid="uid://0obwaccxhlby" path="res://scenes/ability_component.gd" id="3_h2rng"]
+[ext_resource type="Resource" uid="uid://d2b0n57k5h2b6" path="res://abilities/fireball.tres" id="4_ic7ih"]
+[ext_resource type="Resource" uid="uid://b56bj5xnq4mar" path="res://abilities/heal.tres" id="5_al1la"]
 
 [node name="piece" type="CharacterBody2D"]
 collision_mask = 2
@@ -11,3 +14,11 @@ script = ExtResource("1_s58gp")
 position = Vector2(4, 4)
 texture = ExtResource("1_gebih")
 centered = false
+
+[node name="AbilityComponent" type="Node" parent="."]
+script = ExtResource("3_h2rng")
+ability_q = ExtResource("4_ic7ih")
+ability_w = ExtResource("5_al1la")
+
+[connection signal="ability_activated" from="AbilityComponent" to="." method="_on_ability_component_ability_activated"]
+[connection signal="ability_deactivated" from="AbilityComponent" to="." method="_on_ability_component_ability_deactivated"]
