@@ -6,7 +6,7 @@
 script = ExtResource("1_lt4uu")
 id = "fireball"
 name = "Fireball"
-range = 3
+range = 5
 pattern = 2
 damage = 20
 cooldown = 2

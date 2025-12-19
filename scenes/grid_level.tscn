@@ -1,9 +1,10 @@
-[gd_scene load_steps=18 format=4 uid="uid://dsjhjor50obpr"]
+[gd_scene load_steps=19 format=4 uid="uid://dsjhjor50obpr"]
 
 [ext_resource type="Script" uid="uid://c7lkh65nnxbq7" path="res://scenes/grid_level.gd" id="1_6vi3e"]
 [ext_resource type="Texture2D" uid="uid://b7jc613nb4upx" path="res://resources/env/mtiles.png" id="2_q2a55"]
 [ext_resource type="PackedScene" uid="uid://6k21p1w33pbf" path="res://scenes/piece.tscn" id="2_rb7e7"]
 [ext_resource type="Script" uid="uid://dlji4mlapi7i3" path="res://scenes/ability_bar.gd" id="4_k66n8"]
+[ext_resource type="Resource" uid="uid://dl2g6dptcav7q" path="res://abilities/sword.tres" id="4_uxptx"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_q2a55"]
 vertices = PackedVector2Array(8, 8, -8, 8, -8, -8, 8, -8)
@@ -77,6 +78,9 @@ tile_set = SubResource("TileSet_yxi66")
 
 [node name="piece" parent="." instance=ExtResource("2_rb7e7")]
 position = Vector2(340, 182)
+
+[node name="AbilityComponent" parent="piece" index="1"]
+ability_e = ExtResource("4_uxptx")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
