@@ -8,5 +8,4 @@ id = "sword"
 name = "Sword"
 damage = 1
 cooldown = 1
-ap_cost = 0
 metadata/_custom_type_script = "uid://dssthok6llb1d"

@@ -14,13 +14,13 @@ var active_ability: AbilityData = null
 
 func activate(ability: AbilityData) -> void:
 	active_ability = ability
-	emit_signal("ability_activated", ability)
+	ability_activated.emit(ability)
 
 
 func clear() -> void:
 	if active_ability:
 		active_ability = null
-		emit_signal("ability_deactivated")
+		ability_deactivated.emit()
 
 
 func get_ability_by_slot(slot: String) -> AbilityData:
