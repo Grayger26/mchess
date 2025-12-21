@@ -230,6 +230,7 @@ script = ExtResource("8_vxsa8")
 [connection signal="toggled" from="CanvasLayer/AbilityBar/MarginContainer/HBoxContainer/WButton" to="CanvasLayer/AbilityBar" method="_on_w_button_toggled"]
 [connection signal="toggled" from="CanvasLayer/AbilityBar/MarginContainer/HBoxContainer/EButton" to="CanvasLayer/AbilityBar" method="_on_e_button_toggled"]
 [connection signal="toggled" from="CanvasLayer/AbilityBar/MarginContainer/HBoxContainer/RButton" to="CanvasLayer/AbilityBar" method="_on_r_button_toggled"]
+[connection signal="button_up" from="CanvasLayer/BattleButtons/EndTurnButton" to="player" method="_on_end_turn_button_button_up"]
 [connection signal="turn_finished" from="EnemyGroup/enemy" to="TurnManager" method="_on_enemy_turn_finished"]
 [connection signal="turn_finished" from="EnemyGroup/enemy2" to="TurnManager" method="_on_enemy_turn_finished"]
 

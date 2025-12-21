@@ -333,3 +333,22 @@ func show_ability_range() -> void:
 
 
 	grid.set_highlighted_cells(cells, color)
+
+
+func _on_end_turn_button_button_up() -> void:
+	if path.is_empty():
+		velocity = Vector2.ZERO
+		ap = 0
+		finish_movement()
+		end_turn()
+		
+
+	if path_index >= path.size():
+		finish_movement()
+		return
+	
+	var next_cell := path[path_index]
+	var next_pos := cell_to_world(next_cell)
+	if global_position.distance_to(next_pos) < 1.0:
+		finish_movement()
+		end_turn()
