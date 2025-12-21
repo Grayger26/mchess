@@ -17,9 +17,11 @@ func _ready() -> void:
 		return
 
 	player.turn_finished.connect(_on_player_turn_finished)
+	player.died.connect(_on_player_died)
 
 	for e in enemies:
 		e.turn_finished.connect(_on_enemy_turn_finished)
+		e.died.connect(_on_enemy_died)
 
 	start_player_turn()
 
@@ -32,9 +34,13 @@ func start_player_turn() -> void:
 func _on_player_turn_finished() -> void:
 	start_enemy_turn()
 
+func _on_player_died() -> void:
+	print("GAME OVER")
+
 # ---------- ENEMY ----------
 func start_enemy_turn() -> void:
 	state = TurnState.ENEMY
+	enemies = get_tree().get_nodes_in_group("enemy")
 
 	if enemies.is_empty():
 		start_player_turn()
@@ -49,3 +55,9 @@ func _on_enemy_turn_finished() -> void:
 		start_player_turn()
 	else:
 		enemies[enemy_index].start_turn()
+
+func _on_enemy_died() -> void:
+	enemies = get_tree().get_nodes_in_group("enemy")
+
+	if state == TurnState.ENEMY and enemy_index >= enemies.size():
+		start_player_turn()

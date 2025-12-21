@@ -2,10 +2,15 @@ extends CharacterBody2D
 class_name Enemy
 
 signal turn_finished
+signal hp_changed(current_hp: int, max_hp: int)
+signal died
 
 @export var speed := 50.0
 @export var max_ap := 6
+@export var max_hp := 10
+
 var ap := 0
+var hp := 10
 
 @onready var grid = get_parent().get_parent()
 @onready var cell_size := Vector2(grid.cell_size)
@@ -17,8 +22,12 @@ var target_player
 
 func _ready() -> void:
 	add_to_group("enemy")
+
 	current_cell = world_to_cell(global_position)
 	global_position = cell_to_world(current_cell)
+
+	hp = max_hp
+	emit_hp()
 
 # ---------- TURN ----------
 func start_turn() -> void:
@@ -47,7 +56,6 @@ func calc_path() -> void:
 
 	grid.rebuild_unit_blocks(units, self)
 
-	# ищем свободные клетки рядом с игроком
 	var targets: Array[Vector2i] = []
 	var dirs = [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]
 
@@ -63,7 +71,6 @@ func calc_path() -> void:
 		end_turn()
 		return
 
-	# выбираем ближайшую
 	var best_path: Array[Vector2i] = []
 
 	for t in targets:
@@ -79,8 +86,6 @@ func calc_path() -> void:
 
 	path = best_path.slice(1, min(best_path.size(), ap + 1))
 	path_index = 0
-
-
 
 # ---------- PHYSICS ----------
 func _physics_process(_delta: float) -> void:
@@ -98,14 +103,29 @@ func _physics_process(_delta: float) -> void:
 	move_and_slide()
 
 	if global_position.distance_to(next_pos) < 1.0:
-		if ap <= 0:
-			end_turn()
-			return
-
 		ap -= 1
 		global_position = next_pos
 		current_cell = next_cell
 		path_index += 1
+
+		if ap <= 0:
+			end_turn()
+
+# ---------- HP ----------
+func take_damage(amount: int) -> void:
+	hp = max(hp - amount, 0)
+	emit_hp()
+
+	if hp <= 0:
+		die()
+
+func emit_hp() -> void:
+	hp_changed.emit(hp, max_hp)
+
+func die() -> void:
+	print("ENEMY DIED")
+	died.emit()
+	queue_free()
 
 # ---------- HELPERS ----------
 func world_to_cell(pos: Vector2) -> Vector2i:

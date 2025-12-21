@@ -163,10 +163,10 @@ script = ExtResource("6_mg5yc")
 
 [node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/Stats"]
 layout_mode = 0
-offset_left = -4.0
-offset_right = 39.0
-offset_bottom = 40.0
-theme_override_constants/margin_left = 100
+offset_left = -28.0
+offset_right = 152.0
+offset_bottom = 50.0
+theme_override_constants/margin_left = 70
 
 [node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/Stats/MarginContainer"]
 layout_mode = 2

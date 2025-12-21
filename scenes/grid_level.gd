@@ -234,3 +234,62 @@ func build_static_obstacles(blocked_cells: Array[Vector2i]) -> void:
 	for cell in blocked_cells:
 		static_obstacles[cell] = true
 		astar_grid.set_point_solid(cell, true)
+
+func get_cells_in_range_for_ability(
+	from: Vector2i,
+	range: int
+) -> Array[Vector2i]:
+
+	var result: Array[Vector2i] = []
+
+	for x in range(-range, range + 1):
+		for y in range(-range, range + 1):
+			var dist = abs(x) + abs(y)
+			if dist == 0 or dist > range:
+				continue
+
+			var cell := from + Vector2i(x, y)
+
+			if not is_cell_inside_grid(cell):
+				continue
+
+			# ✅ ПРОВЕРЯЕМ ЛИНИЮ ВИДИМОСТИ (СТЕНЫ)
+			if not has_line_of_sight_static(from, cell):
+				continue
+
+			result.append(cell)
+
+	return result
+
+func has_line_of_sight_static(from: Vector2i, to: Vector2i) -> bool:
+	var x0 := from.x
+	var y0 := from.y
+	var x1 := to.x
+	var y1 := to.y
+
+	var dx = abs(x1 - x0)
+	var dy = abs(y1 - y0)
+
+	var sx := 1 if x0 < x1 else -1
+	var sy := 1 if y0 < y1 else -1
+
+	var err = dx - dy
+
+	while true:
+		var cell := Vector2i(x0, y0)
+
+		if cell != from and is_static_obstacle(cell):
+			return false
+
+		if x0 == x1 and y0 == y1:
+			break
+
+		var e2 = err * 2
+		if e2 > -dy:
+			err -= dy
+			x0 += sx
+		if e2 < dx:
+			err += dx
+			y0 += sy
+
+	return true

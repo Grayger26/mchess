@@ -4,12 +4,18 @@ class_name Player
 # ---------- SIGNALS ----------
 signal turn_finished
 signal ap_changed(current_ap: int, max_ap: int)
+signal hp_changed(current_hp: int, max_hp: int)
+signal died
 
 # ---------- STATS ----------
 @export var speed := 50.0
 @export var move_range := 2
 @export var max_ap := 10
+@export var max_hp := 20
+
+
 var ap := 10
+var hp := 20
 
 # ---------- REFERENCES ----------
 @onready var grid = get_parent()
@@ -24,17 +30,20 @@ var state := PlayerState.MOVE
 var current_cell: Vector2i
 var path: Array[Vector2i] = []
 var path_index := 0
-
 var last_hovered_cell := Vector2i(-999, -999)
 
 # ---------- READY ----------
 func _ready() -> void:
+	emit_hp()
 	add_to_group("player")
 
 	current_cell = world_to_cell(global_position)
 	global_position = cell_to_world(current_cell)
 
+	ap = max_ap
+	hp = max_hp
 	emit_ap()
+	emit_hp()
 
 	if ability_bar:
 		ability_bar.ability_slot_toggled.connect(_on_ability_slot_toggled)
@@ -53,10 +62,10 @@ func end_turn() -> void:
 	velocity = Vector2.ZERO
 	grid.clear_preview_path()
 	grid.hide_highlight()
-	
+
 	if ability_bar:
 		ability_bar.cancel_all_buttons()
-	
+
 	turn_finished.emit()
 
 # ---------- INPUT ----------
@@ -126,17 +135,31 @@ func finish_movement() -> void:
 func emit_ap() -> void:
 	ap_changed.emit(ap, max_ap)
 
+# ---------- HP ----------
+func take_damage(amount: int) -> void:
+	hp = max(hp - amount, 0)
+	emit_hp()
+
+	if hp <= 0:
+		die()
+
+func emit_hp() -> void:
+	hp_changed.emit(hp, max_hp)
+
+func die() -> void:
+	print("PLAYER DIED")
+	died.emit()
+	queue_free()
+
 # ---------- PATH ----------
 func request_path(target_cell: Vector2i) -> void:
 	var units := []
 	units.append_array(get_tree().get_nodes_in_group("enemy"))
 	units.append(self)
 
-	# блокируем всех, кроме себя
 	grid.rebuild_unit_blocks(units, self)
 
 	var new_path = grid.get_grid_path(current_cell, target_cell)
-
 	if new_path.is_empty():
 		return
 
@@ -147,15 +170,9 @@ func request_path(target_cell: Vector2i) -> void:
 	path = new_path.slice(1)
 	path_index = 0
 
-
-
 # ---------- PREVIEW ----------
 func update_move_preview() -> void:
-	if state != PlayerState.MOVE:
-		grid.clear_preview_path()
-		return
-	
-	if not path.is_empty():
+	if state != PlayerState.MOVE or not path.is_empty():
 		grid.clear_preview_path()
 		return
 
@@ -172,76 +189,11 @@ func update_move_preview() -> void:
 	if preview.is_empty():
 		return
 
-	var cost = preview.size() - 1
-	if cost > ap:
+	if preview.size() - 1 > ap:
 		grid.clear_preview_path()
 		return
 
 	grid.set_preview_path(preview)
-
-# ---------- ABILITIES ----------
-
-func activate_ability(ability: AbilityData) -> void:
-	if state == PlayerState.TARGETING:
-		abilities.activate(ability)
-		show_ability_range()
-		return
-
-	if state != PlayerState.MOVE:
-		return
-
-	abilities.activate(ability)
-	state = PlayerState.TARGETING
-	grid.clear_preview_path()
-	grid.hide_highlight()
-	show_ability_range()
-
-
-func cancel_ability() -> void:
-	abilities.clear()
-	state = PlayerState.MOVE
-	update_highlight()
-	
-	if ability_bar:
-		ability_bar.cancel_all_buttons()
-
-
-func cast_ability(target_cell: Vector2i) -> void:
-	state = PlayerState.CASTING
-
-	print("CAST:", abilities.active_ability.name, "on", target_cell)
-
-	# TODO: damage / heal / cooldown / ap cost
-
-	abilities.clear()
-	
-	if ability_bar:
-		ability_bar.cancel_all_buttons()
-	
-	state = PlayerState.MOVE
-	update_highlight()
-
-
-func show_ability_range() -> void:
-	var ability := abilities.active_ability
-	if not ability:
-		return
-
-	var cells: Array[Vector2i] = []
-	var color := Color(1.0, 0.2, 0.2, 0.35)
-
-	match ability.pattern:
-		AbilityData.AbilityPattern.SELF:
-			cells = grid.get_self_cell(current_cell)
-			color = Color(0.2, 1.0, 0.2, 0.35)
-		_:
-			cells = grid.get_cells_in_range(current_cell, ability.range)
-
-	grid.set_highlighted_cells(cells, color)
-
-
-func get_ability_targets() -> Array[Vector2i]:
-	return grid.highlighted_cells
 
 # ---------- LEGAL MOVES ----------
 func get_legal_moves(from: Vector2i) -> Array[Vector2i]:
@@ -297,3 +249,87 @@ func _on_ability_slot_toggled(slot: String, enabled: bool) -> void:
 	else:
 		if state == PlayerState.TARGETING:
 			cancel_ability()
+
+
+func get_ability_targets() -> Array[Vector2i]:
+	return grid.get_highlighted_cells()
+
+func cast_ability(target_cell: Vector2i) -> void:
+	var ability := abilities.active_ability
+	if not ability:
+		return
+
+	print(
+		"CAST:",
+		ability.name,
+		"on",
+		target_cell
+	)
+
+	# --- AP COST ---
+	ap -= ability.ap_cost
+	ap = max(ap, 0)
+	emit_ap()
+
+	# TODO:
+	# ability.apply(self, target_cell)
+	# или
+	# deal_damage / heal / effect
+
+	abilities.clear()
+	grid.hide_highlight()
+
+	if ability_bar:
+		ability_bar.cancel_all_buttons()
+
+	state = PlayerState.MOVE
+
+	if ap <= 0:
+		end_turn()
+	else:
+		update_highlight()
+
+
+
+func activate_ability(ability: AbilityData) -> void:
+	if state != PlayerState.MOVE:
+		return
+
+	abilities.activate(ability)
+	state = PlayerState.TARGETING
+
+	grid.clear_preview_path()
+	grid.hide_highlight()
+
+	show_ability_range()
+
+
+func cancel_ability() -> void:
+	abilities.clear()
+	state = PlayerState.MOVE
+	update_highlight()
+
+	if ability_bar:
+		ability_bar.cancel_all_buttons()
+
+func show_ability_range() -> void:
+	var ability := abilities.active_ability
+	if not ability:
+		return
+
+	var cells: Array[Vector2i] = []
+	var color := Color(1.0, 0.2, 0.2, 0.35)
+
+	# ПАТТЕРН — ТОЛЬКО ТО, ЧТО У ТЕБЯ ТОЧНО ЕСТЬ
+	if ability.pattern == AbilityData.AbilityPattern.SELF:
+		cells = grid.get_self_cell(current_cell)
+		color = Color(0.2, 1.0, 0.2, 0.35)
+	else:
+		# ЛЮБОЙ ДРУГОЙ ПАТТЕРН — ЧЕРЕЗ RANGE
+		cells = grid.get_cells_in_range_for_ability(
+			current_cell,
+			ability.range
+		)
+
+
+	grid.set_highlighted_cells(cells, color)
