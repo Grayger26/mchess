@@ -33,6 +33,7 @@ func start_player_turn() -> void:
 
 func _on_player_turn_finished() -> void:
 	start_enemy_turn()
+	
 
 func _on_player_died() -> void:
 	print("GAME OVER")
