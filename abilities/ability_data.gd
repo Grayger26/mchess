@@ -13,8 +13,10 @@ class_name AbilityData
 enum AbilityType {
 	DAMAGE,
 	HEAL,
-	UTILITY
+	UTILITY,
+	STUN
 }
+
 
 enum AbilityPattern {
 	SINGLE,
@@ -30,3 +32,4 @@ enum AbilityPattern {
 @export var can_target_empty := false
 @export var can_target_enemy := true
 @export var can_target_player := false
+@export var stun_turns: int = 0

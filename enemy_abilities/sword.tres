@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="EnemyAttack" load_steps=2 format=3 uid="uid://n4krfi1mis22"]
+
+[ext_resource type="Script" uid="uid://dww1nmt4qnxhj" path="res://enemy_abilities/enemy_attack.gd" id="1_avdv2"]
+
+[resource]
+script = ExtResource("1_avdv2")
+name = "sword"
+damage = 2
+metadata/_custom_type_script = "uid://dww1nmt4qnxhj"

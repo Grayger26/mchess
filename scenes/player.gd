@@ -16,6 +16,11 @@ signal died
 var ap := 10
 var hp := 20
 
+var stun_turns := 0
+var is_turn_active := false
+
+
+
 # ---------- REFERENCES ----------
 @onready var grid = get_parent()
 @onready var cell_size: Vector2 = Vector2(grid.cell_size)
@@ -47,37 +52,60 @@ func _ready() -> void:
 
 	if ability_bar:
 		ability_bar.ability_slot_toggled.connect(_on_ability_slot_toggled)
-
+	
 
 # ---------- TURN ----------
 func start_turn() -> void:
+	is_turn_active = true
+	if stun_turns > 0:
+		stun_turns -= 1
+		print("PLAYER STUNNED, turns left:", stun_turns)
+		call_deferred("_finish_stunned_turn")
+		return
+
+	
 	ap = max_ap
 	emit_ap()
 
-	abilities.tick_cooldowns() # ✅ cooldown уменьшается здесь
+	abilities.tick_cooldowns()
 
 	has_moved = false
 	state = PlayerState.MOVE
-	update_highlight()
+
+	# ⏳ откладываем на следующий кадр
+	call_deferred("_start_turn_deferred")
+
 
 
 func end_turn() -> void:
+	if not is_turn_active:
+		return
+
 	state = PlayerState.MOVE
 	path.clear()
 	path_index = 0
 	velocity = Vector2.ZERO
+
+	has_moved = false # 🔥 ВОТ ЭТО КЛЮЧ
 
 	grid.clear_preview_path()
 	grid.hide_highlight()
 
 	if ability_bar:
 		ability_bar.cancel_all_buttons()
-
+		
+	is_turn_active = false
 	turn_finished.emit()
+	grid.clear_hover_move_tile()
+
+
 
 
 # ---------- INPUT ----------
 func _input(event: InputEvent) -> void:
+	if is_stunned():
+		return
+	
 	if not (event is InputEventMouseButton and event.pressed):
 		return
 	if not path.is_empty():
@@ -102,10 +130,17 @@ func _input(event: InputEvent) -> void:
 # ---------- PROCESS ----------
 func _process(_delta: float) -> void:
 	update_move_preview()
+	update_move_hover()
+	update_attack_hover()
 
 
 # ---------- PHYSICS ----------
 func _physics_process(_delta: float) -> void:
+	if is_stunned():
+		velocity = Vector2.ZERO
+		return
+
+	
 	if path.is_empty():
 		velocity = Vector2.ZERO
 		return
@@ -189,6 +224,8 @@ func request_path(target_cell: Vector2i) -> void:
 
 	path = new_path.slice(1)
 	path_index = 0
+	grid.clear_hover_move_tile()
+
 
 
 # ---------- PREVIEW ----------
@@ -310,6 +347,10 @@ func cancel_ability() -> void:
 	abilities.clear()
 	state = PlayerState.MOVE
 	update_highlight()
+	
+	grid.attack_tiles.clear()
+	grid.clear_hover_attack_tile()
+
 
 	if ability_bar:
 		ability_bar.cancel_all_buttons()
@@ -331,8 +372,15 @@ func cast_ability(target_cell: Vector2i) -> void:
 	emit_ap()
 
 	abilities.put_on_cooldown(ability)
+	grid.attack_tiles.clear()
+	grid.clear_hover_attack_tile()
+
 
 	match ability.type:
+		AbilityData.AbilityType.STUN:
+			var enemy := get_enemy_at_cell(target_cell)
+			if enemy:
+				enemy.apply_stun(ability.stun_turns)
 		AbilityData.AbilityType.DAMAGE:
 			var enemy := get_enemy_at_cell(target_cell)
 			if enemy:
@@ -352,6 +400,10 @@ func cast_ability(target_cell: Vector2i) -> void:
 		ability_bar.cancel_all_buttons()
 
 	state = PlayerState.MOVE
+	
+	if state == PlayerState.MOVE:
+		update_highlight()
+
 
 	if ap <= 0:
 		end_turn()
@@ -376,7 +428,9 @@ func show_ability_range() -> void:
 			ability.range
 		)
 
+	grid.attack_tiles = cells.duplicate() # ✅ ВОТ КЛЮЧ
 	grid.set_highlighted_cells(cells, color)
+
 
 
 func get_enemy_at_cell(cell: Vector2i) -> Enemy:
@@ -385,18 +439,83 @@ func get_enemy_at_cell(cell: Vector2i) -> Enemy:
 			return e
 	return null
 
-func _on_end_turn_button_button_up() -> void: 
-	if path.is_empty(): 
-		velocity = Vector2.ZERO 
-		ap = 0 
-		finish_movement() 
-		end_turn() 
-	if path_index >= path.size(): 
-		finish_movement() 
-		return 
-		
-	var next_cell := path[path_index] 
-	var next_pos := cell_to_world(next_cell) 
-	if global_position.distance_to(next_pos) < 1.0: 
-		finish_movement() 
-		end_turn()
+func _on_end_turn_button_button_up() -> void:
+	if self.is_moving():
+		return  # ❌ нельзя закончить ход во время движения
+
+	self.force_end_turn()
+
+
+
+func is_moving() -> bool:
+	return not path.is_empty()
+
+
+func force_end_turn() -> void:
+	velocity = Vector2.ZERO
+	path.clear()
+	path_index = 0
+	ap = 0
+	has_moved = true
+
+	finish_movement()
+	end_turn()
+
+
+
+func _start_turn_deferred() -> void:
+	var units := []
+	units.append_array(get_tree().get_nodes_in_group("enemy"))
+	units.append(self)
+
+	grid.rebuild_unit_blocks(units, self)
+
+	update_highlight()
+
+func update_attack_hover() -> void:
+	if state != PlayerState.TARGETING:
+		grid.clear_hover_attack_tile()
+		return
+
+	var mouse_cell := world_to_cell(get_global_mouse_position())
+
+	if mouse_cell in grid.attack_tiles:
+		grid.set_hover_attack_tile(mouse_cell)
+	else:
+		grid.clear_hover_attack_tile()
+
+func update_move_hover() -> void:
+	if state != PlayerState.MOVE or has_moved or not path.is_empty():
+		grid.clear_hover_move_tile()
+		return
+
+	var mouse_cell := world_to_cell(get_global_mouse_position())
+
+	if mouse_cell in get_legal_moves(current_cell):
+		grid.set_hover_move_tile(mouse_cell)
+	else:
+		grid.clear_hover_move_tile()
+
+
+func is_stunned() -> bool:
+	return stun_turns > 0
+
+func apply_stun(turns: int) -> void:
+	stun_turns = max(stun_turns, turns)
+	print(name, "STUNNED FOR", stun_turns, "TURNS")
+
+func _finish_stunned_turn() -> void:
+	if not is_turn_active:
+		return
+
+	is_turn_active = false
+
+	grid.clear_preview_path()
+	grid.hide_highlight()
+	grid.clear_hover_move_tile()
+	grid.clear_hover_attack_tile()
+
+	if ability_bar:
+		ability_bar.cancel_all_buttons()
+
+	turn_finished.emit()

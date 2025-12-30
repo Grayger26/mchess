@@ -1,12 +1,15 @@
-[gd_scene load_steps=21 format=4 uid="uid://dsjhjor50obpr"]
+[gd_scene load_steps=24 format=4 uid="uid://dsjhjor50obpr"]
 
 [ext_resource type="Script" uid="uid://c7lkh65nnxbq7" path="res://scenes/grid_level.gd" id="1_6vi3e"]
 [ext_resource type="Texture2D" uid="uid://b7jc613nb4upx" path="res://resources/env/mtiles.png" id="2_q2a55"]
 [ext_resource type="PackedScene" uid="uid://6k21p1w33pbf" path="res://scenes/player.tscn" id="2_rb7e7"]
 [ext_resource type="Script" uid="uid://dlji4mlapi7i3" path="res://scenes/ability_bar.gd" id="4_k66n8"]
 [ext_resource type="Script" uid="uid://ce8pmm8uxoeb3" path="res://scenes/stats.gd" id="6_mg5yc"]
+[ext_resource type="Resource" uid="uid://31w522yl8gyi" path="res://enemy_abilities/fireball.tres" id="7_gyror"]
 [ext_resource type="PackedScene" uid="uid://cg48ukqi15s5y" path="res://scenes/enemy.tscn" id="7_yxi66"]
+[ext_resource type="Resource" uid="uid://n4krfi1mis22" path="res://enemy_abilities/sword.tres" id="8_0utgr"]
 [ext_resource type="Script" uid="uid://crwqf8h77fjwx" path="res://scenes/turn_manager.gd" id="8_vxsa8"]
+[ext_resource type="Resource" uid="uid://cl7x7kvhge6de" path="res://enemy_abilities/stun.tres" id="9_0utgr"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_q2a55"]
 vertices = PackedVector2Array(8, 8, -8, 8, -8, -8, 8, -8)
@@ -64,7 +67,7 @@ unicode = 114
 [sub_resource type="Shortcut" id="Shortcut_0utgr"]
 events = [SubResource("InputEventKey_gyror")]
 
-[node name="GridLevel" type="Node2D"]
+[node name="GridLevel" type="Node2D" groups=["grid"]]
 script = ExtResource("1_6vi3e")
 
 [node name="Tilemaps" type="Node2D" parent="."]
@@ -81,7 +84,6 @@ tile_set = SubResource("TileSet_yxi66")
 [node name="player" parent="." groups=["player"] instance=ExtResource("2_rb7e7")]
 position = Vector2(340, 182)
 motion_mode = 1
-move_range = 3
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
@@ -215,10 +217,20 @@ text = "End Turn"
 [node name="EnemyGroup" type="Node2D" parent="."]
 
 [node name="enemy" parent="EnemyGroup" instance=ExtResource("7_yxi66")]
-position = Vector2(257, 87)
+position = Vector2(89, 54)
+max_ap = 10
+move_range = 1
+attack_data = ExtResource("7_gyror")
 
 [node name="enemy2" parent="EnemyGroup" instance=ExtResource("7_yxi66")]
-position = Vector2(301, 97)
+position = Vector2(133, 64)
+max_ap = 5
+attack_data = ExtResource("8_0utgr")
+
+[node name="enemy3" parent="EnemyGroup" instance=ExtResource("7_yxi66")]
+position = Vector2(286, 158)
+max_ap = 5
+attack_data = ExtResource("9_0utgr")
 
 [node name="TurnManager" type="Node" parent="."]
 script = ExtResource("8_vxsa8")
@@ -233,5 +245,6 @@ script = ExtResource("8_vxsa8")
 [connection signal="button_up" from="CanvasLayer/BattleButtons/EndTurnButton" to="player" method="_on_end_turn_button_button_up"]
 [connection signal="turn_finished" from="EnemyGroup/enemy" to="TurnManager" method="_on_enemy_turn_finished"]
 [connection signal="turn_finished" from="EnemyGroup/enemy2" to="TurnManager" method="_on_enemy_turn_finished"]
+[connection signal="turn_finished" from="EnemyGroup/enemy3" to="TurnManager" method="_on_enemy_turn_finished"]
 
 [editable path="player"]

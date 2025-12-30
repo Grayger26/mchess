@@ -6,6 +6,10 @@ class_name Grid
 
 var static_obstacles := {}
 
+var attack_tiles: Array[Vector2i] = []
+var hover_attack_tile: Vector2i = Vector2i(-1, -1)
+var hover_move_tile: Vector2i = Vector2i(-1, -1)
+
 
 @onready var obstacles: TileMapLayer = $Tilemaps/obstacles
 
@@ -175,6 +179,8 @@ func is_cell_inside_grid(cell: Vector2i) -> bool:
 func _draw() -> void:
 	draw_highlight()
 	draw_preview_path()
+	draw_hover_move()
+	draw_hover_attack()
 
 func draw_highlight() -> void:
 	for cell in highlighted_cells:
@@ -207,15 +213,20 @@ func set_unit_blocked(cell: Vector2i, blocked: bool) -> void:
 
 
 func rebuild_unit_blocks(units: Array, ignore_unit) -> void:
-	for x in range(grid_size.x):
-		for y in range(grid_size.y):
-			var cell := Vector2i(x, y)
+	# сначала очистим только динамические блоки
+	for u in get_tree().get_nodes_in_group("enemy"):
+		astar_grid.set_point_solid(u.current_cell, false)
 
-			# стены остаются solid
-			if is_static_obstacle(cell):
-				astar_grid.set_point_solid(cell, true)
-			else:
-				astar_grid.set_point_solid(cell, false)
+	var player := get_tree().get_first_node_in_group("player")
+	if player:
+		astar_grid.set_point_solid(player.current_cell, false)
+
+	# теперь блокируем актуальные
+	for u in units:
+		if u == ignore_unit:
+			continue
+		astar_grid.set_point_solid(u.current_cell, true)
+
 
 	# блокируем клетки юнитов
 	for u in units:
@@ -293,3 +304,105 @@ func has_line_of_sight_static(from: Vector2i, to: Vector2i) -> bool:
 			y0 += sy
 
 	return true
+
+
+func refresh_unit_blocks(ignore_unit = null) -> void:
+	var units := []
+	var player := get_tree().get_first_node_in_group("player")
+	if player:
+		units.append(player)
+
+	units.append_array(get_tree().get_nodes_in_group("enemy"))
+	rebuild_unit_blocks(units, ignore_unit)
+
+
+func set_hover_attack_tile(cell: Vector2i) -> void:
+	if cell == hover_attack_tile:
+		return
+
+	hover_attack_tile = cell
+	queue_redraw()
+
+func clear_hover_attack_tile() -> void:
+	if hover_attack_tile != Vector2i(-1, -1):
+		hover_attack_tile = Vector2i(-1, -1)
+		queue_redraw()
+
+
+func draw_hover_attack() -> void:
+	if hover_attack_tile == Vector2i(-1, -1):
+		return
+	if hover_attack_tile not in attack_tiles:
+		return
+
+	var pos := Vector2(hover_attack_tile) * Vector2(cell_size)
+	draw_rect(
+		Rect2(pos, Vector2(rect_size)),
+		Color(
+			highlight_color.r,
+			highlight_color.g,
+			highlight_color.b,
+			0.7
+		),
+		true
+	)
+
+func set_hover_move_tile(cell: Vector2i) -> void:
+	if cell == hover_move_tile:
+		return
+	hover_move_tile = cell
+	queue_redraw()
+
+func clear_hover_move_tile() -> void:
+	if hover_move_tile != Vector2i(-1, -1):
+		hover_move_tile = Vector2i(-1, -1)
+		queue_redraw()
+
+func draw_hover_move() -> void:
+	if hover_move_tile == Vector2i(-1, -1):
+		return
+	if hover_move_tile not in highlighted_cells:
+		return
+
+	var pos := Vector2(hover_move_tile) * Vector2(cell_size)
+	draw_rect(
+		Rect2(pos, Vector2(rect_size)),
+		Color(
+			highlight_color.r,
+			highlight_color.g,
+			highlight_color.b,
+			0.65
+		),
+		true
+	)
+
+func get_line_cells(from: Vector2i, to: Vector2i) -> Array[Vector2i]:
+	var result: Array[Vector2i] = []
+
+	var x0 = from.x
+	var y0 = from.y
+	var x1 = to.x
+	var y1 = to.y
+
+	var dx = abs(x1 - x0)
+	var dy = abs(y1 - y0)
+
+	var sx = 1 if x0 < x1 else -1
+	var sy = 1 if y0 < y1 else -1
+	var err = dx - dy
+
+	while true:
+		result.append(Vector2i(x0, y0))
+
+		if x0 == x1 and y0 == y1:
+			break
+
+		var e2 = 2 * err
+		if e2 > -dy:
+			err -= dy
+			x0 += sx
+		if e2 < dx:
+			err += dx
+			y0 += sy
+
+	return result
