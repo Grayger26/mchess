@@ -9,7 +9,8 @@ class_name EnemyAttack
 
 enum AttackType {
 	DAMAGE,
-	STUN
+	STUN,
+	HEAL
 }
 
 @export var type: AttackType = AttackType.DAMAGE

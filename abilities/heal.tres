@@ -6,9 +6,10 @@
 script = ExtResource("1_kijqi")
 id = "heal"
 name = "Heal"
+cooldown = 3
+damage = 5
+type = 1
 pattern = 4
 can_target_enemy = false
 can_target_player = true
-damage = -3
-cooldown = 3
 metadata/_custom_type_script = "uid://dssthok6llb1d"

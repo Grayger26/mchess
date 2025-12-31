@@ -386,10 +386,9 @@ func cast_ability(target_cell: Vector2i) -> void:
 			if enemy:
 				print("HIT ENEMY!")
 				enemy.take_damage(ability.damage)
-
 		AbilityData.AbilityType.HEAL:
-			print("HEAL — позже")
-
+			print("HEAL PLAYER FOR", ability.damage)
+			heal(ability.damage)
 		AbilityData.AbilityType.UTILITY:
 			print("UTILITY — позже")
 
@@ -519,3 +518,15 @@ func _finish_stunned_turn() -> void:
 		ability_bar.cancel_all_buttons()
 
 	turn_finished.emit()
+
+
+func heal(amount: int) -> void:
+	if amount <= 0:
+		return
+
+	var old_hp := hp
+	hp = min(hp + amount, max_hp)
+
+	if hp != old_hp:
+		emit_hp()
+	
