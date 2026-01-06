@@ -1,15 +1,18 @@
 extends Node2D
 class_name Grid
 
-@export var cell_size : Vector2i = Vector2i(16, 16)
-@export var rect_size : Vector2i = Vector2i(15, 15)
+@export var cell_size : Vector2i = Vector2i(48, 48)
+@export var rect_size : Vector2i = Vector2i(48, 48)
+
+# Set the grid size manually instead of using viewport size
+@export var grid_width : int = 500  # Number of cells wide
+@export var grid_height : int = 500  # Number of cells tall
 
 var static_obstacles := {}
 
 var attack_tiles: Array[Vector2i] = []
 var hover_attack_tile: Vector2i = Vector2i(-1, -1)
 var hover_move_tile: Vector2i = Vector2i(-1, -1)
-
 
 @onready var obstacles: TileMapLayer = $Tilemaps/obstacles
 
@@ -25,25 +28,23 @@ var preview_path : Array[Vector2i] = []
 var preview_color : Color = Color(0.2, 0.8, 1.0, 0.667)
 var preview_width : float = 1.2
 
-
 # ---------- READY ----------
 
 func _ready() -> void:
 	initialize_grid()
 	update_obstacles()
 
-
 # ---------- GRID INIT ----------
 
 func initialize_grid() -> void:
-	grid_size = Vector2i(get_viewport_rect().size) / cell_size
+	# Use exported grid size instead of viewport size
+	grid_size = Vector2i(grid_width, grid_height)
 
 	astar_grid.size = grid_size
 	astar_grid.cell_size = cell_size
 	astar_grid.offset = cell_size / 2
 	astar_grid.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER
 	astar_grid.update()
-
 
 func update_obstacles() -> void:
 	if not obstacles:
@@ -55,14 +56,12 @@ func update_obstacles() -> void:
 			var blocked := obstacles.get_cell_source_id(cell) != -1
 			astar_grid.set_point_solid(cell, blocked)
 
-
 # ---------- PATH ----------
 
 func get_grid_path(from: Vector2i, to: Vector2i) -> Array[Vector2i]:
 	if astar_grid.is_point_solid(to):
 		return []
 	return astar_grid.get_id_path(from, to)
-
 
 # ---------- RANGE ----------
 
@@ -88,10 +87,8 @@ func get_cells_in_range(from: Vector2i, range: int) -> Array[Vector2i]:
 
 	return result
 
-
 func get_self_cell(from: Vector2i) -> Array[Vector2i]:
 	return [from]
-
 
 # ---------- LINE OF SIGHT ----------
 
@@ -130,7 +127,6 @@ func has_line_of_sight(from: Vector2i, to: Vector2i) -> bool:
 
 	return true
 
-
 # ---------- PREVIEW PATH ----------
 
 func set_preview_path(path: Array[Vector2i]) -> void:
@@ -140,7 +136,6 @@ func set_preview_path(path: Array[Vector2i]) -> void:
 func clear_preview_path() -> void:
 	preview_path.clear()
 	queue_redraw()
-
 
 # ---------- HIGHLIGHT ----------
 
@@ -152,8 +147,6 @@ func set_highlighted_cells(
 	highlight_color = color
 	queue_redraw()
 
-
-# алиас — чтобы ничего нигде не падало
 func hide_highlight() -> void:
 	highlighted_cells.clear()
 	queue_redraw()
@@ -164,7 +157,6 @@ func clear_highlight() -> void:
 func get_highlighted_cells() -> Array[Vector2i]:
 	return highlighted_cells
 
-
 # ---------- HELPERS ----------
 
 func is_cell_inside_grid(cell: Vector2i) -> bool:
@@ -172,7 +164,6 @@ func is_cell_inside_grid(cell: Vector2i) -> bool:
 		cell.x >= 0 and cell.x < grid_size.x
 		and cell.y >= 0 and cell.y < grid_size.y
 	)
-
 
 # ---------- DRAW ----------
 
@@ -203,14 +194,12 @@ func draw_preview_path() -> void:
 
 	draw_polyline(points, preview_color, preview_width, true)
 
-
 # ---------- DYNAMIC BLOCKS (UNITS) ----------
 
 func set_unit_blocked(cell: Vector2i, blocked: bool) -> void:
 	if not is_cell_inside_grid(cell):
 		return
 	astar_grid.set_point_solid(cell, blocked)
-
 
 func rebuild_unit_blocks(units: Array, ignore_unit) -> void:
 	# сначала очистим только динамические блоки
@@ -227,18 +216,14 @@ func rebuild_unit_blocks(units: Array, ignore_unit) -> void:
 			continue
 		astar_grid.set_point_solid(u.current_cell, true)
 
-
 	# блокируем клетки юнитов
 	for u in units:
 		if u == ignore_unit:
 			continue
 		astar_grid.set_point_solid(u.current_cell, true)
 
-
-
 func is_static_obstacle(cell: Vector2i) -> bool:
 	return obstacles.get_cell_source_id(cell) != -1
-
 
 func build_static_obstacles(blocked_cells: Array[Vector2i]) -> void:
 	static_obstacles.clear()
@@ -305,7 +290,6 @@ func has_line_of_sight_static(from: Vector2i, to: Vector2i) -> bool:
 
 	return true
 
-
 func refresh_unit_blocks(ignore_unit = null) -> void:
 	var units := []
 	var player := get_tree().get_first_node_in_group("player")
@@ -314,7 +298,6 @@ func refresh_unit_blocks(ignore_unit = null) -> void:
 
 	units.append_array(get_tree().get_nodes_in_group("enemy"))
 	rebuild_unit_blocks(units, ignore_unit)
-
 
 func set_hover_attack_tile(cell: Vector2i) -> void:
 	if cell == hover_attack_tile:
@@ -327,7 +310,6 @@ func clear_hover_attack_tile() -> void:
 	if hover_attack_tile != Vector2i(-1, -1):
 		hover_attack_tile = Vector2i(-1, -1)
 		queue_redraw()
-
 
 func draw_hover_attack() -> void:
 	if hover_attack_tile == Vector2i(-1, -1):

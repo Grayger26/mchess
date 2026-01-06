@@ -3,7 +3,7 @@ class_name EnemyAttack
 
 @export var name: String = "Attack"
 
-@export var range: int = 1          # в клетках
+@export var range: int = 1       
 @export var ap_cost: int = 1
 @export var cooldown: int = 1
 
