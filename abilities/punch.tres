@@ -4,8 +4,9 @@
 
 [resource]
 script = ExtResource("1_m42wv")
-id = "sword"
-name = "Sword"
-damage = 1
+id = "punch"
+name = "Punch"
 cooldown = 1
+damage = 5
+animation_name = "punch"
 metadata/_custom_type_script = "uid://dssthok6llb1d"

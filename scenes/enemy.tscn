@@ -1,17 +1,117 @@
-[gd_scene load_steps=4 format=3 uid="uid://cg48ukqi15s5y"]
+[gd_scene load_steps=18 format=3 uid="uid://cg48ukqi15s5y"]
 
 [ext_resource type="Texture2D" uid="uid://45qt6bt5h8ue" path="res://resources/enemy_piece.png" id="1_7p1mj"]
 [ext_resource type="Script" uid="uid://c16qvm5matyj7" path="res://scenes/enemy.gd" id="1_md0e3"]
+[ext_resource type="Texture2D" uid="uid://mhuxy88vcjmv" path="res://resources/soviet/other/chains.png" id="3_4ra3w"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_md0e3"]
 size = Vector2(14.5, 14.5)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4ra3w"]
+size = Vector2(14.5, 14.5)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ur7pv"]
+atlas = ExtResource("3_4ra3w")
+region = Rect2(288, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_y4r1p"]
+atlas = ExtResource("3_4ra3w")
+region = Rect2(336, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_d2wvv"]
+atlas = ExtResource("3_4ra3w")
+region = Rect2(384, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3v2ag"]
+atlas = ExtResource("3_4ra3w")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jej6c"]
+atlas = ExtResource("3_4ra3w")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_f1ej7"]
+atlas = ExtResource("3_4ra3w")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_oprun"]
+atlas = ExtResource("3_4ra3w")
+region = Rect2(96, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_a8ls1"]
+atlas = ExtResource("3_4ra3w")
+region = Rect2(144, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qfm1y"]
+atlas = ExtResource("3_4ra3w")
+region = Rect2(192, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fulsm"]
+atlas = ExtResource("3_4ra3w")
+region = Rect2(240, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4r5pv"]
+atlas = ExtResource("3_4ra3w")
+region = Rect2(288, 0, 48, 48)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_5uy6h"]
+animations = [{
+"frames": [],
+"loop": false,
+"name": &"default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ur7pv")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_y4r1p")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_d2wvv")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3v2ag")
+}],
+"loop": false,
+"name": &"remove_chains",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jej6c")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_f1ej7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_oprun")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_a8ls1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qfm1y")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fulsm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4r5pv")
+}],
+"loop": false,
+"name": &"set_chains",
+"speed": 10.0
+}]
 
 [node name="enemy" type="CharacterBody2D" groups=["enemy"]]
 collision_layer = 4
 collision_mask = 7
 motion_mode = 1
 script = ExtResource("1_md0e3")
-max_ap = 3
+
+[node name="EnemyVisuals" type="Node2D" parent="."]
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 position = Vector2(4, 4)
@@ -28,6 +128,16 @@ anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 
+[node name="shields" type="HBoxContainer" parent="UI"]
+custom_minimum_size = Vector2(50, 5)
+layout_mode = 0
+offset_left = -5.0
+offset_top = -27.0
+offset_right = 45.0
+offset_bottom = 13.0
+theme_override_constants/separation = 10
+alignment = 1
+
 [node name="HpNumLabel" type="Label" parent="UI"]
 layout_mode = 0
 offset_left = -12.0
@@ -39,3 +149,21 @@ theme_override_font_sizes/font_size = 16
 text = "0"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="AutoHideTimer" type="Timer" parent="UI"]
+wait_time = 3.0
+one_shot = true
+
+[node name="MouseTriggerArea" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MouseTriggerArea"]
+position = Vector2(7.75, 7.75)
+shape = SubResource("RectangleShape2D_4ra3w")
+
+[node name="ChainsSprite" type="AnimatedSprite2D" parent="."]
+position = Vector2(8, 8)
+sprite_frames = SubResource("SpriteFrames_5uy6h")
+
+[connection signal="timeout" from="UI/AutoHideTimer" to="." method="_on_auto_hide_timer_timeout"]
+[connection signal="mouse_entered" from="MouseTriggerArea" to="." method="_on_mouse_trigger_area_mouse_entered"]
+[connection signal="mouse_exited" from="MouseTriggerArea" to="." method="_on_mouse_trigger_area_mouse_exited"]

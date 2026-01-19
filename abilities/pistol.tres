@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="AbilityData" load_steps=3 format=3 uid="uid://d2b0n57k5h2b6"]
+
+[ext_resource type="PackedScene" uid="uid://bw18i50wfayfy" path="res://scenes/bullet_scene.tscn" id="1_swcr3"]
+[ext_resource type="Script" uid="uid://dssthok6llb1d" path="res://abilities/ability_data.gd" id="2_1nma2"]
+
+[resource]
+script = ExtResource("2_1nma2")
+id = "pistol"
+name = "Pistol"
+range = 5
+ap_cost = 2
+cooldown = 1
+damage = 5
+pattern = 2
+animation_name = "pistol"
+projectile_scene = ExtResource("1_swcr3")
+metadata/_custom_type_script = "uid://dssthok6llb1d"

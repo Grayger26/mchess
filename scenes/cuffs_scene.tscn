@@ -1,0 +1,90 @@
+[gd_scene load_steps=13 format=3 uid="uid://cuwvh4t7xtwx3"]
+
+[ext_resource type="Script" uid="uid://b7v2y8iqnwyew" path="res://scenes/projectile.gd" id="1_6n2x7"]
+[ext_resource type="Texture2D" uid="uid://360ogb8ah6fo" path="res://resources/soviet/other/cuffs.png" id="1_fuoo5"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_83md0"]
+atlas = ExtResource("1_fuoo5")
+region = Rect2(0, 0, 9, 9)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uwypx"]
+atlas = ExtResource("1_fuoo5")
+region = Rect2(9, 0, 9, 9)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tv156"]
+atlas = ExtResource("1_fuoo5")
+region = Rect2(18, 0, 9, 9)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_80rbf"]
+atlas = ExtResource("1_fuoo5")
+region = Rect2(27, 0, 9, 9)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mll8f"]
+atlas = ExtResource("1_fuoo5")
+region = Rect2(36, 0, 9, 9)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2qf88"]
+atlas = ExtResource("1_fuoo5")
+region = Rect2(45, 0, 9, 9)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_whexq"]
+atlas = ExtResource("1_fuoo5")
+region = Rect2(54, 0, 9, 9)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_w5djs"]
+atlas = ExtResource("1_fuoo5")
+region = Rect2(63, 0, 9, 9)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6n2x7"]
+atlas = ExtResource("1_fuoo5")
+region = Rect2(0, 0, 9, 9)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_6jivf"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_83md0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uwypx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tv156")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_80rbf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mll8f")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2qf88")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_whexq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_w5djs")
+}],
+"loop": true,
+"name": &"fly",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6n2x7")
+}],
+"loop": false,
+"name": &"hit",
+"speed": 10.0
+}]
+
+[node name="CuffsScene" type="Node2D"]
+script = ExtResource("1_6n2x7")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, 3)
+scale = Vector2(1.5, 1.5)
+sprite_frames = SubResource("SpriteFrames_6jivf")
+animation = &"hit"
+autoplay = "fly"

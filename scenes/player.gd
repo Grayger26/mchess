@@ -24,6 +24,9 @@ var is_turn_active := false
 @onready var cell_size: Vector2 = Vector2(grid.cell_size)
 @onready var abilities: AbilityComponent = $AbilityComponent
 @onready var ability_bar := get_tree().get_first_node_in_group("ability_bar")
+@onready var chains_sprite: AnimatedSprite2D = $ChainsSprite
+@onready var visuals: PlayerVisuals = $PlayerVisuals
+
 
 # ---------- STATE ----------
 enum PlayerState { MOVE, TARGETING, CASTING }
@@ -35,9 +38,16 @@ var path_index := 0
 var last_hovered_cell := Vector2i(-999, -999)
 var has_moved := false
 
+var pending_ability: AbilityData = null
+var pending_target: Enemy = null
+
 # ---------- READY ----------
 func _ready() -> void:
 	add_to_group("player")
+	chains_sprite.visible = false
+	visuals.play_idle()
+	visuals.cast_fire.connect(_on_visuals_cast_fire)
+
 
 	current_cell = world_to_cell(global_position)
 	global_position = cell_to_world(current_cell)
@@ -53,6 +63,18 @@ func _ready() -> void:
 # ---------- TURN ----------
 func start_turn() -> void:
 	is_turn_active = true
+	
+	# ⛓️ СНЯТИЕ СТАНА
+	if stun_turns == 0 and chains_sprite.visible:
+		_hide_stun()
+
+	# ❗ Проверка стана
+	if stun_turns > 0:
+		stun_turns -= 1
+		print(name, " is STUNNED, turns left:", stun_turns)
+		call_deferred("end_turn")
+		return
+	
 	if stun_turns > 0:
 		stun_turns -= 1
 		print("PLAYER STUNNED, turns left:", stun_turns)
@@ -124,6 +146,7 @@ func _process(_delta: float) -> void:
 
 # ---------- PHYSICS ----------
 func _physics_process(_delta: float) -> void:
+
 	if is_stunned():
 		velocity = Vector2.ZERO
 		return
@@ -139,6 +162,7 @@ func _physics_process(_delta: float) -> void:
 	var next_cell := path[path_index]
 	var next_pos := cell_to_world(next_cell)
 
+	visuals.look_at_x(global_position.x, next_pos.x)
 	velocity = global_position.direction_to(next_pos) * speed
 	move_and_slide()
 
@@ -166,6 +190,8 @@ func finish_movement() -> void:
 
 	has_moved = true
 	grid.hide_highlight()
+	visuals.play_idle()
+
 
 # ---------- AP ----------
 func emit_ap() -> void:
@@ -175,6 +201,7 @@ func emit_ap() -> void:
 func take_damage(amount: int) -> void:
 	hp = max(hp - amount, 0)
 	emit_hp()
+	visuals.play_hurt()
 
 	if hp <= 0:
 		die()
@@ -183,9 +210,9 @@ func emit_hp() -> void:
 	hp_changed.emit(hp, max_hp)
 
 func die() -> void:
-	print("PLAYER DIED")
+	visuals.play_death()
 	died.emit()
-	queue_free()
+	#queue_free()
 
 # ---------- PATH ----------
 func request_path(target_cell: Vector2i) -> void:
@@ -204,6 +231,7 @@ func request_path(target_cell: Vector2i) -> void:
 		return
 
 	path = new_path.slice(1)
+	visuals.play_walk()
 	path_index = 0
 	grid.clear_hover_move_tile()
 
@@ -330,11 +358,17 @@ func get_ability_targets() -> Array[Vector2i]:
 	return grid.get_highlighted_cells()
 
 func cast_ability(target_cell: Vector2i) -> void:
+	visuals.look_at_x(global_position.x, cell_to_world(target_cell).x)
 	var ability := abilities.active_ability
 	if not ability:
 		return
 
 	print("CAST:", ability.name, "on", target_cell)
+	
+	visuals.look_at_x(global_position.x, cell_to_world(target_cell).x)
+
+	# ▶️ АНИМАЦИЯ СПОСОБНОСТИ
+	visuals.play_cast(ability.animation_name)
 
 	ap -= ability.ap_cost
 	ap = max(ap, 0)
@@ -344,21 +378,10 @@ func cast_ability(target_cell: Vector2i) -> void:
 	grid.attack_tiles.clear()
 	grid.clear_hover_attack_tile()
 
-	match ability.type:
-		AbilityData.AbilityType.STUN:
-			var enemy := get_enemy_at_cell(target_cell)
-			if enemy:
-				enemy.apply_stun(ability.stun_turns)
-		AbilityData.AbilityType.DAMAGE:
-			var enemy := get_enemy_at_cell(target_cell)
-			if enemy:
-				print("HIT ENEMY!")
-				enemy.take_damage(ability.damage)
-		AbilityData.AbilityType.HEAL:
-			print("HEAL PLAYER FOR", ability.damage)
-			heal(ability.damage)
-		AbilityData.AbilityType.UTILITY:
-			print("UTILITY — позже")
+	var enemy := get_enemy_at_cell(target_cell)
+
+	pending_ability = ability
+	pending_target = enemy
 
 	abilities.clear()
 	grid.hide_highlight()
@@ -406,7 +429,8 @@ func _on_end_turn_button_button_up() -> void:
 	self.force_end_turn()
 
 func is_moving() -> bool:
-	return not path.is_empty()
+	return not path.is_empty() or visuals.locked
+
 
 func force_end_turn() -> void:
 	velocity = Vector2.ZERO
@@ -455,8 +479,23 @@ func is_stunned() -> bool:
 	return stun_turns > 0
 
 func apply_stun(turns: int) -> void:
+	var was_stunned := stun_turns > 0
 	stun_turns = max(stun_turns, turns)
+
+	if not was_stunned:
+		_show_stun()
+
 	print(name, "STUNNED FOR", stun_turns, "TURNS")
+
+func _show_stun():
+	chains_sprite.visible = true
+	chains_sprite.play("set_chains")
+
+func _hide_stun():
+	chains_sprite.play("remove_chains")
+	await chains_sprite.animation_finished
+	chains_sprite.visible = false
+
 
 func _finish_stunned_turn() -> void:
 	if not is_turn_active:
@@ -483,3 +522,50 @@ func heal(amount: int) -> void:
 
 	if hp != old_hp:
 		emit_hp()
+
+func _spawn_projectile(ability: AbilityData, enemy: Enemy) -> void:
+	var projectile := ability.projectile_scene.instantiate()
+	get_tree().current_scene.add_child(projectile)
+
+	projectile.global_position = global_position
+	projectile.setup(self, enemy, ability)
+
+func _apply_ability_effect(ability: AbilityData, enemy: Enemy) -> void:
+	match ability.type:
+		AbilityData.AbilityType.STUN:
+			if enemy:
+				enemy.apply_stun(ability.stun_turns)
+
+		AbilityData.AbilityType.DAMAGE:
+			if enemy:
+				enemy.take_damage(ability.damage)
+
+		AbilityData.AbilityType.HEAL:
+			heal(ability.damage)
+
+		AbilityData.AbilityType.UTILITY:
+			pass
+
+func _on_cast_animation_fire():
+	if not pending_ability:
+		return
+
+	if pending_ability.projectile_scene and pending_target:
+		_spawn_projectile(pending_ability, pending_target)
+	else:
+		_apply_ability_effect(pending_ability, pending_target)
+
+	pending_ability = null
+	pending_target = null
+
+func _on_visuals_cast_fire():
+	if not pending_ability:
+		return
+
+	if pending_ability.projectile_scene and pending_target:
+		_spawn_projectile(pending_ability, pending_target)
+	else:
+		_apply_ability_effect(pending_ability, pending_target)
+
+	pending_ability = null
+	pending_target = null

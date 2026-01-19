@@ -9,7 +9,6 @@ var enemies: Array = []
 var enemy_index = 0
 var current_enemy: Enemy = null
 
-
 func _ready() -> void:
 	player = get_tree().get_first_node_in_group("player")
 	enemies = get_tree().get_nodes_in_group("enemy")
@@ -43,55 +42,65 @@ func start_player_turn() -> void:
 
 	player.start_turn()
 
-
 func _on_player_turn_finished() -> void:
 	if state != TurnState.PLAYER:
 		return
+	
 	enemies = get_tree().get_nodes_in_group("enemy")
 
-	# ✅ ЕСЛИ ВРАГОВ НЕТ — СРАЗУ НОВЫЙ ХОД ИГРОКА
 	if enemies.is_empty():
 		start_player_turn()
 		return
 
 	start_enemy_turn()
 
-	
-
 func _on_player_died() -> void:
 	print("GAME OVER")
 	state = null
-
 
 # ---------- ENEMY ----------
 func start_enemy_turn() -> void:
 	state = TurnState.ENEMY
 	enemies = get_tree().get_nodes_in_group("enemy")
+	enemy_index = 0
+	current_enemy = null
 
+	_continue_enemy_turns()
+
+func _continue_enemy_turns() -> void:
+	# Refresh enemy list
+	enemies = get_tree().get_nodes_in_group("enemy")
+	
 	if enemies.is_empty():
 		start_player_turn()
 		return
 
-	if enemy_index >= enemies.size():
-		start_player_turn()
-		return
+	# Skip invalid enemies
+	while enemy_index < enemies.size():
+		var e = enemies[enemy_index]
+		if is_instance_valid(e):
+			current_enemy = e
+			# Give a small delay to ensure clean state transitions
+			await get_tree().process_frame
+			if is_instance_valid(e) and state == TurnState.ENEMY:
+				e.start_turn()
+			return
+		enemy_index += 1
 
-	current_enemy = enemies[enemy_index]
-	current_enemy.start_turn()
+	# If we got here, all enemies are invalid
+	start_player_turn()
 
-
-func _on_enemy_turn_finished() -> void:
+func _on_enemy_turn_finished(enemy: Enemy) -> void:
 	if state != TurnState.ENEMY:
 		return
 
+	# Only advance if this is the current enemy's turn finishing
+	if enemy != current_enemy:
+		return
+
 	enemy_index += 1
-
-	if enemy_index >= enemies.size():
-		start_player_turn()
-	else:
-		current_enemy = enemies[enemy_index]
-		current_enemy.start_turn()
-
+	current_enemy = null
+	_continue_enemy_turns()
 
 func _on_enemy_died() -> void:
 	var old_enemies = enemies.duplicate()
@@ -104,7 +113,7 @@ func _on_enemy_died() -> void:
 	if state != TurnState.ENEMY:
 		return
 
-	# 🔥 если умер враг ДО текущего — сдвигаем индекс
+	# Adjust index if enemy died before current turn
 	for i in range(old_enemies.size()):
 		if not is_instance_valid(old_enemies[i]):
 			if i < enemy_index:

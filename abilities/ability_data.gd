@@ -33,3 +33,5 @@ enum AbilityPattern {
 @export var can_target_enemy := true
 @export var can_target_player := false
 @export var stun_turns: int = 0
+@export var animation_name : String
+@export var projectile_scene: PackedScene

@@ -1,0 +1,63 @@
+[gd_scene load_steps=9 format=3 uid="uid://bw18i50wfayfy"]
+
+[ext_resource type="Script" uid="uid://dwssygy8y0rue" path="res://scenes/bullet_scene.gd" id="1_bw2vd"]
+[ext_resource type="Texture2D" uid="uid://br01pek0ul6pf" path="res://resources/soviet/other/bullet.png" id="2_x4051"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0ppkx"]
+atlas = ExtResource("2_x4051")
+region = Rect2(0, 0, 9, 9)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5v4yv"]
+atlas = ExtResource("2_x4051")
+region = Rect2(0, 0, 9, 9)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xj4ca"]
+atlas = ExtResource("2_x4051")
+region = Rect2(9, 0, 9, 9)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3npik"]
+atlas = ExtResource("2_x4051")
+region = Rect2(18, 0, 9, 9)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hp2ru"]
+atlas = ExtResource("2_x4051")
+region = Rect2(27, 0, 9, 9)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_bw2vd"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0ppkx")
+}],
+"loop": false,
+"name": &"fly",
+"speed": 9.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5v4yv")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xj4ca")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3npik")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hp2ru")
+}],
+"loop": false,
+"name": &"hit",
+"speed": 8.0
+}]
+
+[node name="BulletScene" type="Node2D"]
+script = ExtResource("1_bw2vd")
+speed = 100.0
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, 4)
+scale = Vector2(2, 2)
+sprite_frames = SubResource("SpriteFrames_bw2vd")
+animation = &"fly"
+autoplay = "fly"
