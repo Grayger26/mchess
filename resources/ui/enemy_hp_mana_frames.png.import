@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://wj7xxo0xf7ne"
-path="res://.godot/imported/gray-ment-battle.png-6fa191754562dcf5966cbca2c3785d22.ctex"
+uid="uid://08kafue0tht5"
+path="res://.godot/imported/enemy_hp_mana_frames.png-ec94129e252798aa719aa296e47492d9.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://resources/soviet/characters/gray-ment-battle.png"
-dest_files=["res://.godot/imported/gray-ment-battle.png-6fa191754562dcf5966cbca2c3785d22.ctex"]
+source_file="res://resources/ui/enemy_hp_mana_frames.png"
+dest_files=["res://.godot/imported/enemy_hp_mana_frames.png-ec94129e252798aa719aa296e47492d9.ctex"]
 
 [params]
 

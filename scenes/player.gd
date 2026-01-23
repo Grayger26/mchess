@@ -19,6 +19,9 @@ var hp := 20
 var stun_turns := 0
 var is_turn_active := false
 
+var is_dying = false
+var is_dead = false
+
 # ---------- REFERENCES ----------
 @onready var grid = get_parent()
 @onready var cell_size: Vector2 = Vector2(grid.cell_size)
@@ -63,6 +66,7 @@ func _ready() -> void:
 # ---------- TURN ----------
 func start_turn() -> void:
 	is_turn_active = true
+	update_enemies_ui()
 	
 	# ⛓️ СНЯТИЕ СТАНА
 	if stun_turns == 0 and chains_sprite.visible:
@@ -210,8 +214,10 @@ func emit_hp() -> void:
 	hp_changed.emit(hp, max_hp)
 
 func die() -> void:
+	is_dying = true
 	visuals.play_death()
 	died.emit()
+	is_dead = true
 	#queue_free()
 
 # ---------- PATH ----------
@@ -530,33 +536,22 @@ func _spawn_projectile(ability: AbilityData, enemy: Enemy) -> void:
 	projectile.global_position = global_position
 	projectile.setup(self, enemy, ability)
 
-func _apply_ability_effect(ability: AbilityData, enemy: Enemy) -> void:
+func apply_ability_effect(ability: AbilityData, target):
 	match ability.type:
 		AbilityData.AbilityType.STUN:
-			if enemy:
-				enemy.apply_stun(ability.stun_turns)
+			if target:
+				target.apply_stun(ability.stun_turns)
 
 		AbilityData.AbilityType.DAMAGE:
-			if enemy:
-				enemy.take_damage(ability.damage)
+			if target:
+				target.take_damage(ability.damage)
 
 		AbilityData.AbilityType.HEAL:
-			heal(ability.damage)
+			heal(ability.heal_amount)
 
 		AbilityData.AbilityType.UTILITY:
 			pass
 
-func _on_cast_animation_fire():
-	if not pending_ability:
-		return
-
-	if pending_ability.projectile_scene and pending_target:
-		_spawn_projectile(pending_ability, pending_target)
-	else:
-		_apply_ability_effect(pending_ability, pending_target)
-
-	pending_ability = null
-	pending_target = null
 
 func _on_visuals_cast_fire():
 	if not pending_ability:
@@ -565,7 +560,12 @@ func _on_visuals_cast_fire():
 	if pending_ability.projectile_scene and pending_target:
 		_spawn_projectile(pending_ability, pending_target)
 	else:
-		_apply_ability_effect(pending_ability, pending_target)
+		apply_ability_effect(pending_ability, pending_target)
 
 	pending_ability = null
 	pending_target = null
+
+func update_enemies_ui():
+	var enemies = get_tree().get_nodes_in_group("enemy")
+	for enemy in enemies:
+		enemy._update_mana_ui_predicted()

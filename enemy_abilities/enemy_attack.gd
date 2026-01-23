@@ -31,3 +31,5 @@ enum AttackType {
 # SHIELD
 @export var shield_amount: int = 0
 @export var shield_targets: int = 0
+
+@export var projectile_scene: PackedScene

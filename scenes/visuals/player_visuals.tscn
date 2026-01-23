@@ -206,6 +206,20 @@ tracks/0/keys = {
 "update": 1,
 "values": [109, 110, 111, 112, 113, 114, 115, 116, 117, 118]
 }
+tracks/1/type = "method"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"_on_cast_fire"
+}]
+}
 
 [sub_resource type="Animation" id="Animation_786c7"]
 resource_name = "cuffs"

@@ -10,12 +10,17 @@ signal died
 @export var max_ap := 6
 @export var max_hp := 10
 @export var move_range := 4
-
 @export var attack_data: EnemyAttack
+@export var enemy_data: EnemyData
 
 @export_range(0.0, 1.0) var wait_chance := 0.5
 
 var attack_cooldown := 0
+var max_mana := 0
+var mana := 0
+
+var is_dying := false
+var is_dead := false
 
 var ap := 0
 var hp := 10
@@ -23,20 +28,26 @@ var hp := 10
 const MAX_SHIELDS := 2
 var shields := 0
 
-@onready var shields_container: HBoxContainer = $UI/shields
-
 var stun_turns := 0
 var is_turn_active := false
+var action_in_progress := false
+var support_used_this_turn := false
 
+
+@onready var shields_container: HBoxContainer = $UI/shields
 @onready var grid = get_parent().get_parent()
 @onready var cell_size := Vector2(grid.cell_size)
-
 @onready var hp_num_label: Label = $UI/HpNumLabel
-
+@onready var mana_num_label: Label = $UI/ManaNumLabel
 @onready var ui: Control = $UI
 @onready var ui_timer: Timer = $UI/AutoHideTimer
-
 @onready var chains_sprite: AnimatedSprite2D = $ChainsSprite
+@onready var visuals_root: Node2D = $Visuals
+@onready var visuals: EnemyVisuals
+@onready var hp_texture_progress_bar: TextureProgressBar = $UI/ProgressBars/HpTextureProgressBar
+@onready var mana_texture_progress_bar: TextureProgressBar = $UI/ProgressBars/ManaTextureProgressBar
+
+
 
 var mouse_over := false
 
@@ -50,20 +61,30 @@ func _ready() -> void:
 	ui.visible = false
 	chains_sprite.visible = false
 	add_to_group("enemy")
+	
+	if enemy_data:
+		setup_from_data(enemy_data)
 
 	current_cell = world_to_cell(global_position)
 	global_position = cell_to_world(current_cell)
 
 	hp = max_hp
-	hp_num_label.text = str(hp)
+	hp_texture_progress_bar.max_value = max_hp
+	hp_texture_progress_bar.value = hp
+	hp_num_label.text = str(hp) + " / " + str(max_hp)
 	emit_hp()
+	play_visual("play_idle")
+
+
 
 # ---------- TURN ----------
 func start_turn() -> void:
+	await get_tree().create_timer(1.0).timeout
 	if is_turn_active:
 		return
 
 	is_turn_active = true
+	support_used_this_turn = false
 
 	# STUN
 	if stun_turns > 0:
@@ -81,6 +102,12 @@ func start_turn() -> void:
 
 	if attack_cooldown > 0:
 		attack_cooldown -= 1
+		mana = max_mana - attack_cooldown
+	else:
+		mana = max_mana
+
+	_update_mana_ui()
+
 
 	target_player = get_tree().get_first_node_in_group("player")
 	if not target_player:
@@ -88,19 +115,21 @@ func start_turn() -> void:
 		return
 
 	# Priority 1: SHIELD (if available and targets exist)
-	if attack_data and attack_data.type == EnemyAttack.AttackType.SHIELD:
+	if attack_data and attack_data.type == EnemyAttack.AttackType.SHIELD and not support_used_this_turn:
 		var shield_targets = get_shield_targets()
 		if not shield_targets.is_empty():
 			perform_shield(shield_targets)
+			support_used_this_turn = true
 			# After shield, try to move or end turn
 			_try_move_after_action()
 			return
 
 	# Priority 2: HEAL (if available and targets exist)
-	if attack_data and attack_data.type == EnemyAttack.AttackType.HEAL:
+	if attack_data and attack_data.type == EnemyAttack.AttackType.HEAL and not support_used_this_turn:
 		var heal_targets = get_heal_targets()
 		if not heal_targets.is_empty():
 			perform_heal(heal_targets)
+			support_used_this_turn = true
 			# After heal, try to move or end turn
 			_try_move_after_action()
 			return
@@ -177,6 +206,9 @@ func end_turn() -> void:
 	path_index = 0
 	velocity = Vector2.ZERO
 	turn_finished.emit(self)
+	play_visual("play_idle")
+
+
 
 # ---------- ATTACK ----------
 func can_attack() -> bool:
@@ -212,21 +244,29 @@ func is_in_attack_range() -> bool:
 	return has_line_of_sight(current_cell, target_player.current_cell)
 
 func perform_attack() -> void:
+	action_in_progress = true
+	play_visual("look_at_x", [global_position.x, target_player.global_position.x])
+	play_visual("play_ability")
+
+	await _wait_visual_action()
+	
 	if attack_data.type == EnemyAttack.AttackType.HEAL:
 		push_error("perform_attack() called with HEAL ability!")
 		return
 
 	ap -= attack_data.ap_cost
 	attack_cooldown = attack_data.cooldown
+	mana = 0
+	_update_mana_ui()
 
-	match attack_data.type:
-		EnemyAttack.AttackType.DAMAGE:
-			target_player.take_damage(attack_data.damage)
 
-		EnemyAttack.AttackType.STUN:
-			target_player.apply_stun(attack_data.stun_turns)
+		# Если есть projectile — он сам применит эффект
+	if not attack_data.projectile_scene:
+		apply_ability_effect(attack_data, target_player)
+
 
 	print("Enemy uses", attack_data.name, "on player")
+	action_in_progress = false
 
 # ---------- PATH ----------
 func calc_path() -> void:
@@ -301,6 +341,10 @@ func _physics_process(_delta: float) -> void:
 	if not is_turn_active:
 		return
 	
+	if action_in_progress:
+		velocity = Vector2.ZERO
+		return
+	
 	if path.is_empty():
 		return
 
@@ -313,6 +357,10 @@ func _physics_process(_delta: float) -> void:
 	var next_pos := cell_to_world(next_cell)
 
 	velocity = global_position.direction_to(next_pos) * speed
+	play_visual("play_walk")
+	play_visual("look_at_x", [global_position.x, next_pos.x])
+
+
 	move_and_slide()
 
 	if global_position.distance_to(next_pos) < 1.0:
@@ -328,18 +376,20 @@ func _check_attack_after_movement() -> void:
 	# After moving, see if we can now attack/heal/shield
 	
 	# Try SHIELD
-	if attack_data and attack_data.type == EnemyAttack.AttackType.SHIELD:
+	if attack_data and attack_data.type == EnemyAttack.AttackType.SHIELD and not support_used_this_turn:
 		var shield_targets = get_shield_targets()
 		if not shield_targets.is_empty():
 			perform_shield(shield_targets)
+			support_used_this_turn = true
 			end_turn()
 			return
 	
 	# Try HEAL
-	if attack_data and attack_data.type == EnemyAttack.AttackType.HEAL:
+	if attack_data and attack_data.type == EnemyAttack.AttackType.HEAL and not support_used_this_turn:
 		var heal_targets = get_heal_targets()
 		if not heal_targets.is_empty():
 			perform_heal(heal_targets)
+			support_used_this_turn = true
 			end_turn()
 			return
 	
@@ -350,6 +400,7 @@ func _check_attack_after_movement() -> void:
 		return
 	
 	# Can't do anything else, end turn
+	play_visual("play_idle")
 	end_turn()
 
 # ---------- HP ----------
@@ -357,9 +408,12 @@ func take_damage(amount: int) -> void:
 	if shields > 0:
 		remove_one_shield()
 		return
+	
+	play_visual("play_hurt")
 
 	hp = max(hp - amount, 0)
-	hp_num_label.text = str(hp)
+	hp_num_label.text = str(hp) + " / " + str(max_hp)
+	hp_texture_progress_bar.value = hp
 	emit_hp()
 
 	show_ui()
@@ -372,14 +426,33 @@ func emit_hp() -> void:
 	hp_changed.emit(hp, max_hp)
 
 func die() -> void:
+	if is_dying or is_dead:
+		return
+
+	is_dying = true
+
+	# СРАЗУ убираем из логики
+	remove_from_group("enemy")
+	is_turn_active = false
+	action_in_progress = true
+
+	play_visual("play_death")
 	print("ENEMY DIED")
 
+	if visuals:
+		await visuals.anim.animation_finished
+
+	is_dead = true
+	died.emit()
+
 	var grid_node := get_tree().get_first_node_in_group("grid")
+	var player = get_tree().get_first_node_in_group("player")
 	if grid_node:
 		grid_node.set_unit_blocked(current_cell, false)
+		player.update_highlight()
 
-	died.emit()
 	queue_free()
+
 
 # ---------- HELPERS ----------
 func world_to_cell(pos: Vector2) -> Vector2i:
@@ -427,6 +500,8 @@ func get_heal_targets() -> Array:
 	for e in enemies:
 		if e == self:
 			continue
+		if e.is_dying or e.is_dead:
+			continue
 		if e.hp >= e.max_hp:
 			continue
 
@@ -452,8 +527,13 @@ func get_heal_targets() -> Array:
 	return allies.slice(0, min(attack_data.heal_targets, allies.size()))
 
 func perform_heal(targets: Array) -> void:
+	action_in_progress = true
+	play_visual("play_ability")
+	await _wait_visual_action()
 	ap -= attack_data.ap_cost
 	attack_cooldown = attack_data.cooldown
+	mana = 0
+	_update_mana_ui()
 
 	for t in targets:
 		t.receive_heal(attack_data.heal_amount)
@@ -465,10 +545,15 @@ func perform_heal(targets: Array) -> void:
 		targets.size(),
 		"targets"
 	)
+	action_in_progress = false
 
 func receive_heal(amount: int) -> void:
+	if is_dying or is_dead:
+		return
+	play_visual("play_heal")
 	hp = min(hp + amount, max_hp)
-	hp_num_label.text = str(hp)
+	hp_num_label.text = str(hp) + " / " + str(max_hp)
+	hp_texture_progress_bar.value = hp
 	emit_hp()
 	
 	show_ui()
@@ -497,6 +582,8 @@ func _on_mouse_trigger_area_mouse_exited() -> void:
 	ui.visible = false
 
 func add_shields(amount: int) -> void:
+	if is_dying or is_dead:
+		return
 	if amount <= 0:
 		return
 
@@ -582,8 +669,13 @@ func get_shield_targets() -> Array:
 	return result
 
 func perform_shield(targets: Array) -> void:
+	action_in_progress = true
+	play_visual("play_ability")
+	await _wait_visual_action()
 	ap -= attack_data.ap_cost
 	attack_cooldown = attack_data.cooldown
+	mana = 0
+	_update_mana_ui()
 
 	for t in targets:
 		t.add_shields(attack_data.shield_amount)
@@ -595,3 +687,161 @@ func perform_shield(targets: Array) -> void:
 		targets.size(),
 		"targets"
 	)
+	action_in_progress = false
+
+func setup_from_data(data: EnemyData) -> void:
+	if not data:
+		push_error("EnemyData is NULL")
+		return
+
+	# ---------- STATS ----------
+	max_hp = data.max_hp
+	max_ap = data.max_ap
+	move_range = data.move_range
+
+	hp = max_hp
+	ap = 0  # ход начнётся позже
+	emit_hp()
+
+	hp_num_label.text = str(hp) + " / " + str(max_hp)
+	hp_texture_progress_bar.value = hp
+
+	# ---------- ABILITY ----------
+	if not data.abilities.is_empty():
+		attack_data = data.abilities[0].duplicate(true)
+	else:
+		attack_data = null
+
+	# ---------- VISUAL ----------
+	_setup_visuals(data.visual_scene)
+	
+	# ---------- MANA ----------
+	if attack_data:
+		max_mana = attack_data.cooldown
+		mana = max_mana
+	else:
+		max_mana = 0
+		mana = 0
+
+	mana_texture_progress_bar.max_value = max_mana
+	mana_texture_progress_bar.value = mana
+	mana_num_label.text = str(mana) + " / " + str(max_mana)
+
+func _setup_visuals(scene: PackedScene) -> void:
+	if not scene:
+		push_warning("Enemy has no visual scene")
+		return
+
+	for c in visuals_root.get_children():
+		c.queue_free()
+
+	var visual := scene.instantiate()
+	visuals_root.add_child(visual)
+
+	visuals = visual as EnemyVisuals
+
+	if not visuals:
+		push_error("Visual scene is not EnemyVisuals")
+		return
+
+	print("CONNECT cast_fire for", name)
+	visuals.cast_fire.connect(_on_visuals_cast_fire)
+
+	play_visual("play_idle")
+
+
+
+func play_visual(method: String, args := []):
+	if not visuals:
+		return
+	if visuals.has_method(method):
+		visuals.callv(method, args)
+
+func _wait_visual_action() -> void:
+	if visuals and visuals.anim:
+		await visuals.anim.animation_finished
+
+func apply_ability_effect(attack: EnemyAttack, target):
+	if not target:
+		return
+	if target.is_dying or target.is_dead:
+		return
+	match attack.type:
+		EnemyAttack.AttackType.DAMAGE:
+			if target:
+				target.take_damage(attack.damage)
+
+		EnemyAttack.AttackType.STUN:
+			if target:
+				target.apply_stun(attack.stun_turns)
+
+		EnemyAttack.AttackType.HEAL:
+			if target:
+				target.receive_heal(attack.heal_amount)
+
+		EnemyAttack.AttackType.SHIELD:
+			if target:
+				target.add_shields(attack.shield_amount)
+
+func _spawn_projectile(attack: EnemyAttack, target):
+	if not attack.projectile_scene:
+		return
+
+	var projectile := attack.projectile_scene.instantiate()
+	get_tree().current_scene.add_child(projectile)
+
+	projectile.global_position = global_position
+	projectile.setup(self, target, attack)
+
+func _on_visuals_cast_fire():
+	if attack_data.type == EnemyAttack.AttackType.HEAL:
+		return
+	if attack_data.type == EnemyAttack.AttackType.SHIELD:
+		return
+
+	print(
+		"CAST FIRE:",
+		attack_data.name,
+		"projectile:",
+		attack_data.projectile_scene
+	)
+
+	if attack_data.projectile_scene:
+		_spawn_projectile(attack_data, target_player)
+	else:
+		apply_ability_effect(attack_data, target_player)
+
+func _update_mana_ui() -> void:
+	if max_mana <= 0:
+		mana_texture_progress_bar.visible = false
+		mana_num_label.visible = false
+		return
+
+	mana_texture_progress_bar.visible = true
+	mana_num_label.visible = true
+
+	mana_texture_progress_bar.max_value = max_mana
+	mana_texture_progress_bar.value = mana
+	mana_num_label.text = str(mana) + " / " + str(max_mana)
+
+	show_ui()
+	hide_ui_delayed()
+
+func _update_mana_ui_predicted() -> void:
+	if max_mana <= 0:
+		mana_texture_progress_bar.visible = false
+		mana_num_label.visible = false
+		return
+
+	var predicted_cooldown = max(attack_cooldown - 1, 0)
+	var predicted_mana = max_mana - predicted_cooldown
+
+	mana_texture_progress_bar.visible = true
+	mana_num_label.visible = true
+
+	mana_texture_progress_bar.max_value = max_mana
+	mana_texture_progress_bar.value = predicted_mana
+	mana_num_label.text = str(predicted_mana) + " / " + str(max_mana)
+
+	show_ui()
+	hide_ui_delayed()

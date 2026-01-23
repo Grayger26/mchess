@@ -9,6 +9,7 @@ class_name AbilityData
 @export var cooldown: int = 0
 @export var damage: int = 0
 @export var level: int = 1
+@export var heal_amount : int = 0
 
 enum AbilityType {
 	DAMAGE,

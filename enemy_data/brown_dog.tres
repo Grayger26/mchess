@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=5 format=3 uid="uid://bcwdy1gyxlflg"]
+
+[ext_resource type="Script" uid="uid://dww1nmt4qnxhj" path="res://enemy_abilities/enemy_attack.gd" id="1_7yyuv"]
+[ext_resource type="Script" uid="uid://by7144upelc2t" path="res://enemy_data/enemy_data.gd" id="2_2yu7u"]
+[ext_resource type="PackedScene" uid="uid://dhbxpn3lixu0q" path="res://scenes/visuals/brown_dog_visuals.tscn" id="3_2yu7u"]
+
+[sub_resource type="Resource" id="Resource_7yyuv"]
+script = ExtResource("1_7yyuv")
+name = "Bite"
+damage = 5
+heal_amount = 0
+heal_targets = 0
+metadata/_custom_type_script = "uid://dww1nmt4qnxhj"
+
+[resource]
+script = ExtResource("2_2yu7u")
+id = "brown_dog"
+display_name = "Dog"
+max_hp = 6
+move_range = 7
+abilities = Array[ExtResource("1_7yyuv")]([SubResource("Resource_7yyuv")])
+visual_scene = ExtResource("3_2yu7u")
+metadata/_custom_type_script = "uid://by7144upelc2t"

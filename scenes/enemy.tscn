@@ -1,8 +1,10 @@
-[gd_scene load_steps=18 format=3 uid="uid://cg48ukqi15s5y"]
+[gd_scene load_steps=20 format=3 uid="uid://cg48ukqi15s5y"]
 
-[ext_resource type="Texture2D" uid="uid://45qt6bt5h8ue" path="res://resources/enemy_piece.png" id="1_7p1mj"]
 [ext_resource type="Script" uid="uid://c16qvm5matyj7" path="res://scenes/enemy.gd" id="1_md0e3"]
+[ext_resource type="Texture2D" uid="uid://08kafue0tht5" path="res://resources/ui/enemy_hp_mana_frames.png" id="2_c4w8v"]
 [ext_resource type="Texture2D" uid="uid://mhuxy88vcjmv" path="res://resources/soviet/other/chains.png" id="3_4ra3w"]
+[ext_resource type="Texture2D" uid="uid://c1m0wh1qw1c27" path="res://resources/ui/hp_bar.png" id="3_xwavj"]
+[ext_resource type="Texture2D" uid="uid://cgibtwpiokvxs" path="res://resources/ui/mana_bar.png" id="4_nenq2"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_md0e3"]
 size = Vector2(14.5, 14.5)
@@ -111,11 +113,10 @@ collision_mask = 7
 motion_mode = 1
 script = ExtResource("1_md0e3")
 
-[node name="EnemyVisuals" type="Node2D" parent="."]
+[node name="Visuals" type="Node2D" parent="."]
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 position = Vector2(4, 4)
-texture = ExtResource("1_7p1mj")
 centered = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
@@ -138,21 +139,63 @@ offset_bottom = 13.0
 theme_override_constants/separation = 10
 alignment = 1
 
+[node name="AutoHideTimer" type="Timer" parent="UI"]
+wait_time = 1.5
+one_shot = true
+
+[node name="Mana" type="Control" parent="UI"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="ProgressBars" type="Control" parent="UI"]
+anchors_preset = 0
+offset_top = -4.0
+offset_right = 26.0
+offset_bottom = 18.0
+
+[node name="HpTextureProgressBar" type="TextureProgressBar" parent="UI/ProgressBars"]
+layout_mode = 0
+offset_left = -5.0
+offset_top = -17.0
+offset_right = 21.0
+offset_bottom = -1.0
+value = 50.0
+texture_under = ExtResource("2_c4w8v")
+texture_progress = ExtResource("3_xwavj")
+
+[node name="ManaTextureProgressBar" type="TextureProgressBar" parent="UI/ProgressBars"]
+layout_mode = 0
+offset_left = -3.0
+offset_top = -6.0
+offset_right = 19.0
+offset_bottom = -3.0
+value = 100.0
+texture_progress = ExtResource("4_nenq2")
+
 [node name="HpNumLabel" type="Label" parent="UI"]
 layout_mode = 0
-offset_left = -12.0
-offset_top = -18.0
-offset_right = 28.0
-offset_bottom = 5.0
-theme_override_colors/font_color = Color(0.75686276, 0, 0, 1)
+offset_left = 1.0
+offset_top = -19.0
+offset_right = 41.0
+offset_bottom = 4.0
+scale = Vector2(0.25, 0.25)
 theme_override_font_sizes/font_size = 16
 text = "0"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="AutoHideTimer" type="Timer" parent="UI"]
-wait_time = 3.0
-one_shot = true
+[node name="ManaNumLabel" type="Label" parent="UI"]
+layout_mode = 0
+offset_left = -2.9426084
+offset_top = -10.925802
+offset_right = 106.567024
+offset_bottom = 12.074198
+scale = Vector2(0.2, 0.2)
+theme_override_font_sizes/font_size = 16
+text = "1"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [node name="MouseTriggerArea" type="Area2D" parent="."]
 

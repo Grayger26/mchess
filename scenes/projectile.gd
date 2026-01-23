@@ -3,14 +3,14 @@ class_name Projectile
 
 @export var speed := 50.0
 
-var target: Enemy
-var ability: AbilityData
-var caster: Player
+var target
+var ability
+var caster
 var arrived := false
 
 @onready var sprite: AnimatedSprite2D = $AnimatedSprite2D
 
-func setup(p_owner: Player, p_target: Enemy, p_ability: AbilityData) -> void:
+func setup(p_owner, p_target, p_ability) -> void:
 	caster = p_owner
 	target = p_target
 	ability = p_ability
@@ -32,7 +32,9 @@ func _on_hit():
 	arrived = true
 	sprite.play("hit")
 
-	caster._apply_ability_effect(ability, target)
+	if caster.has_method("apply_ability_effect"):
+		caster.apply_ability_effect(ability, target)
+
 
 	await sprite.animation_finished
 	queue_free()
