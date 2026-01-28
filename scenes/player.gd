@@ -44,12 +44,26 @@ var has_moved := false
 var pending_ability: AbilityData = null
 var pending_target: Enemy = null
 
+# ---------- STATUS EFFECTS ----------
+var fire_turns := 0
+var fire_damage := 0
+
+@onready var fire_sprite: AnimatedSprite2D = $FireSprite
+
+
+var hover_aoe_cells: Array[Vector2i] = []
+var hover_aoe_color := Color(0.807, 0.578, 0.153, 0.35)
+
+var pending_target_cell: Vector2i
+
+
 # ---------- READY ----------
 func _ready() -> void:
 	add_to_group("player")
 	chains_sprite.visible = false
 	visuals.play_idle()
 	visuals.cast_fire.connect(_on_visuals_cast_fire)
+	fire_sprite.visible = false
 
 
 	current_cell = world_to_cell(global_position)
@@ -67,6 +81,9 @@ func _ready() -> void:
 func start_turn() -> void:
 	is_turn_active = true
 	update_enemies_ui()
+	
+	# ---------- STATUS EFFECTS ----------
+	_apply_start_turn_effects()
 	
 	# ⛓️ СНЯТИЕ СТАНА
 	if stun_turns == 0 and chains_sprite.visible:
@@ -140,7 +157,17 @@ func _input(event: InputEvent) -> void:
 
 		PlayerState.TARGETING:
 			if clicked_cell in get_ability_targets():
+				var ability := abilities.active_ability
+				if not ability:
+					return
+
+				var enemy := get_enemy_at_cell(clicked_cell)
+
+				if enemy == null and not ability.can_target_empty:
+					return # ❌ нельзя бить по пустоте
+
 				cast_ability(clicked_cell)
+
 
 # ---------- PROCESS ----------
 func _process(_delta: float) -> void:
@@ -364,6 +391,7 @@ func get_ability_targets() -> Array[Vector2i]:
 	return grid.get_highlighted_cells()
 
 func cast_ability(target_cell: Vector2i) -> void:
+
 	visuals.look_at_x(global_position.x, cell_to_world(target_cell).x)
 	var ability := abilities.active_ability
 	if not ability:
@@ -388,6 +416,7 @@ func cast_ability(target_cell: Vector2i) -> void:
 
 	pending_ability = ability
 	pending_target = enemy
+	pending_target_cell = target_cell
 
 	abilities.clear()
 	grid.hide_highlight()
@@ -412,6 +441,18 @@ func show_ability_range() -> void:
 
 	var cells: Array[Vector2i] = []
 	var color := Color(1.0, 0.2, 0.2, 0.35)
+
+	if ability.pattern == AbilityData.AbilityPattern.SELF:
+		cells = grid.get_self_cell(current_cell)
+		color = Color(0.2, 1.0, 0.2, 0.35)
+	else:
+		cells = grid.get_cells_in_range_for_ability(
+			current_cell,
+			ability.range
+		)
+
+	grid.attack_tiles = cells.duplicate()
+	grid.set_highlighted_cells(cells, color)
 
 	if ability.pattern == AbilityData.AbilityPattern.SELF:
 		cells = grid.get_self_cell(current_cell)
@@ -460,6 +501,8 @@ func _start_turn_deferred() -> void:
 func update_attack_hover() -> void:
 	if state != PlayerState.TARGETING:
 		grid.clear_hover_attack_tile()
+		grid.clear_aoe_preview()
+		show_ability_range()
 		return
 
 	var mouse_cell := world_to_cell(get_global_mouse_position())
@@ -468,6 +511,29 @@ func update_attack_hover() -> void:
 		grid.set_hover_attack_tile(mouse_cell)
 	else:
 		grid.clear_hover_attack_tile()
+		grid.clear_aoe_preview()
+		show_ability_range()
+		return
+
+	var ability := abilities.active_ability
+	if not ability:
+		return
+
+	# range атаки — ВСЕГДА своим цветом
+	show_ability_range()
+
+	# 🔥 AOE overlay — отдельным слоем
+	if ability.targeting_type == AbilityData.TargetingType.AOE_ON_CELL:
+		hover_aoe_cells = grid.get_cells_in_range_for_ability(
+			mouse_cell,
+			ability.aoe_radius
+		)
+
+		grid.set_aoe_preview(hover_aoe_cells, hover_aoe_color)
+	else:
+		grid.clear_aoe_preview()
+
+
 
 func update_move_hover() -> void:
 	if state != PlayerState.MOVE or has_moved or not path.is_empty():
@@ -537,6 +603,7 @@ func _spawn_projectile(ability: AbilityData, enemy: Enemy) -> void:
 	projectile.setup(self, enemy, ability)
 
 func apply_ability_effect(ability: AbilityData, target):
+
 	match ability.type:
 		AbilityData.AbilityType.STUN:
 			if target:
@@ -557,10 +624,15 @@ func _on_visuals_cast_fire():
 	if not pending_ability:
 		return
 
-	if pending_ability.projectile_scene and pending_target:
-		_spawn_projectile(pending_ability, pending_target)
+	if pending_ability.projectile_scene:
+		_spawn_projectile_to_cell(
+			pending_ability,
+			pending_target,
+			pending_target_cell
+		)
 	else:
 		apply_ability_effect(pending_ability, pending_target)
+
 
 	pending_ability = null
 	pending_target = null
@@ -569,3 +641,86 @@ func update_enemies_ui():
 	var enemies = get_tree().get_nodes_in_group("enemy")
 	for enemy in enemies:
 		enemy._update_mana_ui_predicted()
+
+
+func apply_status_effect(effect_type: int, damage: int, turns: int) -> void:
+	match effect_type:
+		EnemyAttack.EffectType.DAMAGE:
+			_apply_fire_effect_from_values(damage, turns)
+
+func _apply_fire_effect(attack: EnemyAttack) -> void:
+	fire_damage = attack.effect_damage
+	fire_turns = max(fire_turns, attack.effect_time)
+
+	fire_sprite.visible = true
+	fire_sprite.play("fire")
+
+	print(
+		name,
+		" is on FIRE for ",
+		fire_turns,
+		" turns, dmg:",
+		fire_damage
+	)
+
+func _apply_start_turn_effects() -> void:
+	if fire_turns > 0:
+		print(name, "takes fire damage:", fire_damage)
+
+		take_damage(fire_damage)
+
+		fire_turns -= 1
+
+		if fire_turns <= 0:
+			_remove_fire_effect()
+
+func _remove_fire_effect() -> void:
+	fire_damage = 0
+	fire_turns = 0
+
+	#fire_sprite.play("extinguish")
+	#await fire_sprite.animation_finished
+	fire_sprite.visible = false
+
+	print(name, "fire effect ended")
+
+func apply_status_effect_from_ability(ability: AbilityData) -> void:
+	match ability.effect_type:
+		AbilityData.EffectType.DAMAGE:
+			fire_damage = ability.effect_damage
+			fire_turns = max(fire_turns, ability.effect_time)
+
+			fire_sprite.visible = true
+			fire_sprite.play("fire")
+
+			
+func _apply_fire_effect_from_values(dmg: int, time: int) -> void:
+	fire_damage = dmg
+	fire_turns = max(fire_turns, time)
+
+	fire_sprite.visible = true
+	fire_sprite.play("fire")
+
+	print(
+		name,
+		" is on FIRE for ",
+		fire_turns,
+		" turns, dmg:",
+		fire_damage
+	)
+
+func _spawn_projectile_to_cell(
+	ability: AbilityData,
+	enemy: Enemy,
+	target_cell: Vector2i
+) -> void:
+	var projectile := ability.projectile_scene.instantiate()
+	get_tree().current_scene.add_child(projectile)
+
+	projectile.global_position = global_position
+
+	if enemy:
+		projectile.setup(self, enemy, ability)
+	else:
+		var world_pos := cell_to_world(target_cell) + cell_size * 0.5
+		projectile.setup(self, world_pos, ability)

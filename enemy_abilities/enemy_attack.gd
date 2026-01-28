@@ -11,7 +11,8 @@ enum AttackType {
 	DAMAGE,
 	STUN,
 	HEAL,
-	SHIELD
+	SHIELD,
+	MANA
 }
 
 @export var type: AttackType = AttackType.DAMAGE
@@ -33,3 +34,26 @@ enum AttackType {
 @export var shield_targets: int = 0
 
 @export var projectile_scene: PackedScene
+
+@export var mana_amount: int = 0
+@export var mana_targets: int = 0
+
+
+# EFFECTS
+@export var effect_damage: int = 0
+@export var effect_time: int = 0
+
+enum EffectType {
+	NONE,
+	DAMAGE,
+	MANA_STEAL
+}
+
+enum EffectSprite {
+	none,
+	Fire
+}
+
+
+@export var effect_type: EffectType = EffectType.NONE
+@export var effect_sprite: EffectSprite = EffectSprite.none

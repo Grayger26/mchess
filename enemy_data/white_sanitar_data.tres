@@ -8,6 +8,7 @@
 script = ExtResource("1_2uro5")
 name = "Heal"
 range = 4
+cooldown = 3
 type = 2
 heal_amount = 3
 heal_targets = 2

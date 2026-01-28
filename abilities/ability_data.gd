@@ -36,3 +36,33 @@ enum AbilityPattern {
 @export var stun_turns: int = 0
 @export var animation_name : String
 @export var projectile_scene: PackedScene
+
+
+# EFFECTS
+@export var effect_damage: int = 0
+@export var effect_time: int = 0
+
+enum EffectType {
+	NONE,
+	DAMAGE,
+	MANA_STEAL
+}
+
+enum EffectSprite {
+	none,
+	Fire
+}
+
+@export var effect_type: EffectType = EffectType.NONE
+@export var effect_sprite: EffectSprite = EffectSprite.none
+
+
+enum TargetingType {
+	SINGLE,     # как сейчас
+	AOE_ON_CELL # молотов
+}
+
+@export var targeting_type: TargetingType = TargetingType.SINGLE
+
+# AoE
+@export var aoe_radius: int = 0

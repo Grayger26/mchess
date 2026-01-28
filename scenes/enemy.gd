@@ -56,11 +56,20 @@ var path: Array[Vector2i] = []
 var path_index := 0
 var target_player
 
+# ---------- STATUS EFFECTS ----------
+var fire_turns := 0
+var fire_damage := 0
+
+@onready var fire_sprite: AnimatedSprite2D = $FireSprite
+
+
 # ---------- READY ----------
 func _ready() -> void:
 	ui.visible = false
 	chains_sprite.visible = false
 	add_to_group("enemy")
+	
+	fire_sprite.visible = false
 	
 	if enemy_data:
 		setup_from_data(enemy_data)
@@ -85,6 +94,14 @@ func start_turn() -> void:
 
 	is_turn_active = true
 	support_used_this_turn = false
+	
+	# ---------- STATUS EFFECTS ----------
+	_apply_start_turn_effects()
+	
+	if is_dead or is_dying:
+		end_turn()
+		return
+
 
 	# STUN
 	if stun_turns > 0:
@@ -115,7 +132,7 @@ func start_turn() -> void:
 		return
 
 	# Priority 1: SHIELD (if available and targets exist)
-	if attack_data and attack_data.type == EnemyAttack.AttackType.SHIELD and not support_used_this_turn:
+	if attack_data and attack_data.type == EnemyAttack.AttackType.SHIELD and not support_used_this_turn and attack_cooldown <= 0:
 		var shield_targets = get_shield_targets()
 		if not shield_targets.is_empty():
 			perform_shield(shield_targets)
@@ -125,7 +142,7 @@ func start_turn() -> void:
 			return
 
 	# Priority 2: HEAL (if available and targets exist)
-	if attack_data and attack_data.type == EnemyAttack.AttackType.HEAL and not support_used_this_turn:
+	if attack_data and attack_data.type == EnemyAttack.AttackType.HEAL and not support_used_this_turn and attack_cooldown <= 0:
 		var heal_targets = get_heal_targets()
 		if not heal_targets.is_empty():
 			perform_heal(heal_targets)
@@ -133,11 +150,20 @@ func start_turn() -> void:
 			# After heal, try to move or end turn
 			_try_move_after_action()
 			return
+	# Priority 3: MANA (cooldown reduction)
+	if attack_data and attack_data.type == EnemyAttack.AttackType.MANA and not support_used_this_turn and attack_cooldown <= 0:
+		var mana_targets = get_mana_targets()
+		if not mana_targets.is_empty():
+			perform_mana(mana_targets)
+			support_used_this_turn = true
+			_try_move_after_action()
+			return
 
-	# Priority 3: ATTACK player (if in range and off cooldown)
+
+	# Priority 4: ATTACK player (if in range and off cooldown)
 	if can_attack():
 		print(name, " CAN ATTACK - attacking player!")
-		perform_attack()
+		await perform_attack()
 		# After attack, try to move or end turn
 		_try_move_after_action()
 		return
@@ -160,7 +186,7 @@ func start_turn() -> void:
 			else:
 				print("  - Unknown reason")
 
-	# Priority 4: MOVE (if can't attack yet)
+	# Priority 5: MOVE (if can't attack yet)
 	calc_path()
 
 	if path.is_empty():
@@ -207,6 +233,9 @@ func end_turn() -> void:
 	velocity = Vector2.ZERO
 	turn_finished.emit(self)
 	play_visual("play_idle")
+	
+	update_enemies_ui()
+	
 
 
 
@@ -220,6 +249,9 @@ func can_attack() -> bool:
 		return false
 	if attack_data.type == EnemyAttack.AttackType.SHIELD:
 		return false
+	if attack_data.type == EnemyAttack.AttackType.MANA:
+		return false
+
 
 	if attack_cooldown > 0:
 		return false
@@ -376,7 +408,7 @@ func _check_attack_after_movement() -> void:
 	# After moving, see if we can now attack/heal/shield
 	
 	# Try SHIELD
-	if attack_data and attack_data.type == EnemyAttack.AttackType.SHIELD and not support_used_this_turn:
+	if attack_data and attack_data.type == EnemyAttack.AttackType.SHIELD and not support_used_this_turn and attack_cooldown <= 0:
 		var shield_targets = get_shield_targets()
 		if not shield_targets.is_empty():
 			perform_shield(shield_targets)
@@ -385,7 +417,7 @@ func _check_attack_after_movement() -> void:
 			return
 	
 	# Try HEAL
-	if attack_data and attack_data.type == EnemyAttack.AttackType.HEAL and not support_used_this_turn:
+	if attack_data and attack_data.type == EnemyAttack.AttackType.HEAL and not support_used_this_turn and attack_cooldown <= 0:
 		var heal_targets = get_heal_targets()
 		if not heal_targets.is_empty():
 			perform_heal(heal_targets)
@@ -393,9 +425,19 @@ func _check_attack_after_movement() -> void:
 			end_turn()
 			return
 	
+	# Try MANA
+	if attack_data and attack_data.type == EnemyAttack.AttackType.MANA and not support_used_this_turn  and attack_cooldown <= 0:
+		var mana_targets = get_mana_targets()
+		if not mana_targets.is_empty():
+			perform_mana(mana_targets)
+			support_used_this_turn = true
+			end_turn()
+			return
+
+	
 	# Try ATTACK
 	if can_attack():
-		perform_attack()
+		await perform_attack()
 		end_turn()
 		return
 	
@@ -431,9 +473,13 @@ func die() -> void:
 
 	is_dying = true
 
+	# ⛔ ВАЖНО: мгновенно выходим из хода
+	if is_turn_active:
+		is_turn_active = false
+		turn_finished.emit(self)
+
 	# СРАЗУ убираем из логики
 	remove_from_group("enemy")
-	is_turn_active = false
 	action_in_progress = true
 
 	play_visual("play_death")
@@ -452,6 +498,7 @@ func die() -> void:
 		player.update_highlight()
 
 	queue_free()
+
 
 
 # ---------- HELPERS ----------
@@ -766,22 +813,24 @@ func apply_ability_effect(attack: EnemyAttack, target):
 		return
 	if target.is_dying or target.is_dead:
 		return
+
 	match attack.type:
 		EnemyAttack.AttackType.DAMAGE:
-			if target:
-				target.take_damage(attack.damage)
+			target.take_damage(attack.damage)
+
+			# ▶️ НАЛОЖЕНИЕ ЭФФЕКТА
+			if attack.effect_type != EnemyAttack.EffectType.NONE:
+				target.apply_status_effect(attack)
 
 		EnemyAttack.AttackType.STUN:
-			if target:
-				target.apply_stun(attack.stun_turns)
+			target.apply_stun(attack.stun_turns)
 
 		EnemyAttack.AttackType.HEAL:
-			if target:
-				target.receive_heal(attack.heal_amount)
+			target.receive_heal(attack.heal_amount)
 
 		EnemyAttack.AttackType.SHIELD:
-			if target:
-				target.add_shields(attack.shield_amount)
+			target.add_shields(attack.shield_amount)
+
 
 func _spawn_projectile(attack: EnemyAttack, target):
 	if not attack.projectile_scene:
@@ -843,5 +892,153 @@ func _update_mana_ui_predicted() -> void:
 	mana_texture_progress_bar.value = predicted_mana
 	mana_num_label.text = str(predicted_mana) + " / " + str(max_mana)
 
+func get_mana_targets() -> Array:
+	var candidates := []
+	var enemies = get_tree().get_nodes_in_group("enemy")
+
+	for e in enemies:
+		if e == self:
+			continue
+		if e.is_dying or e.is_dead:
+			continue
+		if e.attack_cooldown <= 1:
+			continue
+
+		var dist := current_cell.distance_to(e.current_cell)
+		if dist > attack_data.range:
+			continue
+
+		if not has_line_of_sight(current_cell, e.current_cell):
+			continue
+
+		candidates.append(e)
+
+	if candidates.is_empty():
+		return []
+
+	# приоритет — у кого больше кулдаун
+	candidates.sort_custom(func(a, b):
+		return a.attack_cooldown > b.attack_cooldown
+	)
+
+	if attack_data.mana_targets <= 1:
+		return [candidates[0]]
+
+	return candidates.slice(0, min(attack_data.mana_targets, candidates.size()))
+
+func perform_mana(targets: Array) -> void:
+	if attack_cooldown > 0:
+		return
+	action_in_progress = true
+	play_visual("play_ability")
+	await _wait_visual_action()
+
+	ap -= attack_data.ap_cost
+	attack_cooldown = attack_data.cooldown
+	mana = 0
+	_update_mana_ui()
+
+	for t in targets:
+		t.receive_mana(attack_data.mana_amount)
+
+	print(
+		"Enemy uses",
+		attack_data.name,
+		"to reduce cooldown for",
+		targets.size(),
+		"targets"
+	)
+
+	action_in_progress = false
+
+func receive_mana(amount: int) -> void:
+	if is_dying or is_dead:
+		return
+	if attack_cooldown <= 0:
+		return
+
+	play_visual("play_ability", ["mana"])
+
+	attack_cooldown = max(attack_cooldown - amount, 0)
+	mana = max_mana - attack_cooldown
+	_update_mana_ui()
+
 	show_ui()
 	hide_ui_delayed()
+
+
+func update_enemies_ui():
+	var enemies = get_tree().get_nodes_in_group("enemy")
+	for enemy in enemies:
+		enemy._update_mana_ui_predicted()
+
+func apply_status_effect(effect_type: int, damage: int, turns: int) -> void:
+	match effect_type:
+		EnemyAttack.EffectType.DAMAGE:
+			_apply_fire_effect_from_values(damage, turns)
+
+
+func _apply_fire_effect(attack: EnemyAttack) -> void:
+	fire_damage = attack.effect_damage
+	fire_turns = max(fire_turns, attack.effect_time)
+
+	fire_sprite.visible = true
+	fire_sprite.play("fire")
+
+	print(
+		name,
+		" is on FIRE for ",
+		fire_turns,
+		" turns, dmg:",
+		fire_damage
+	)
+
+func _apply_start_turn_effects() -> void:
+
+	if fire_turns > 0:
+		print(name, "takes fire damage:", fire_damage)
+
+		take_damage(fire_damage)
+		
+		if is_dead or is_dying:
+			return
+	
+
+		fire_turns -= 1
+
+		if fire_turns <= 0:
+			_remove_fire_effect()
+
+func _remove_fire_effect() -> void:
+	fire_damage = 0
+	fire_turns = 0
+
+	#fire_sprite.play("extinguish")
+	#await fire_sprite.animation_finished
+	fire_sprite.visible = false
+
+	print(name, "fire effect ended")
+
+func apply_status_effect_from_ability(ability: AbilityData) -> void:
+	match ability.effect_type:
+		AbilityData.EffectType.DAMAGE:
+			fire_damage = ability.effect_damage
+			fire_turns = max(fire_turns, ability.effect_time)
+
+			fire_sprite.visible = true
+			fire_sprite.play("fire")
+
+func _apply_fire_effect_from_values(dmg: int, time: int) -> void:
+	fire_damage = dmg
+	fire_turns = max(fire_turns, time)
+
+	fire_sprite.visible = true
+	fire_sprite.play("fire")
+
+	print(
+		name,
+		" is on FIRE for ",
+		fire_turns,
+		" turns, dmg:",
+		fire_damage
+	)

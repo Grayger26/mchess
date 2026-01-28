@@ -23,6 +23,9 @@ var grid_size : Vector2i
 var highlighted_cells : Array[Vector2i] = []
 var highlight_color : Color = Color(0.2, 0.8, 1.0, 0.35)
 
+var aoe_preview_cells: Array[Vector2i] = []
+var aoe_preview_color: Color = Color(1, 1, 0, 0.35)
+
 # ---------- PREVIEW PATH ----------
 var preview_path : Array[Vector2i] = []
 var preview_color : Color = Color(0.2, 0.8, 1.0, 0.667)
@@ -172,6 +175,8 @@ func _draw() -> void:
 	draw_preview_path()
 	draw_hover_move()
 	draw_hover_attack()
+	draw_aoe_preview()
+	
 
 func draw_highlight() -> void:
 	for cell in highlighted_cells:
@@ -388,3 +393,23 @@ func get_line_cells(from: Vector2i, to: Vector2i) -> Array[Vector2i]:
 			y0 += sy
 
 	return result
+
+func draw_aoe_preview() -> void:
+	for cell in aoe_preview_cells:
+		var pos := Vector2(cell) * Vector2(cell_size)
+		draw_rect(
+			Rect2(pos, Vector2(rect_size)),
+			aoe_preview_color,
+			true
+		)
+
+func set_aoe_preview(cells: Array[Vector2i], color: Color) -> void:
+	aoe_preview_cells = cells
+	aoe_preview_color = color
+	queue_redraw()
+
+func clear_aoe_preview() -> void:
+	if aoe_preview_cells.is_empty():
+		return
+	aoe_preview_cells.clear()
+	queue_redraw()

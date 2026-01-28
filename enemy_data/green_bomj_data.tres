@@ -1,0 +1,29 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=6 format=3 uid="uid://dnxcnkrra62pp"]
+
+[ext_resource type="Script" uid="uid://dww1nmt4qnxhj" path="res://enemy_abilities/enemy_attack.gd" id="1_bbqcv"]
+[ext_resource type="PackedScene" uid="uid://bfeljf0locgy8" path="res://scenes/molotov_scene.tscn" id="2_r046g"]
+[ext_resource type="Script" uid="uid://by7144upelc2t" path="res://enemy_data/enemy_data.gd" id="2_xb1l0"]
+[ext_resource type="PackedScene" uid="uid://c1emo5onulugi" path="res://scenes/visuals/green_bomj_visuals.tscn" id="3_xb1l0"]
+
+[sub_resource type="Resource" id="Resource_r046g"]
+script = ExtResource("1_bbqcv")
+name = "Molotov"
+range = 5
+cooldown = 5
+damage = 3
+heal_amount = 0
+heal_targets = 0
+projectile_scene = ExtResource("2_r046g")
+effect_damage = 1
+effect_time = 3
+effect_type = 1
+effect_sprite = 1
+metadata/_custom_type_script = "uid://dww1nmt4qnxhj"
+
+[resource]
+script = ExtResource("2_xb1l0")
+id = "green_bomj"
+display_name = "Bomj"
+abilities = Array[ExtResource("1_bbqcv")]([SubResource("Resource_r046g")])
+visual_scene = ExtResource("3_xb1l0")
+metadata/_custom_type_script = "uid://by7144upelc2t"

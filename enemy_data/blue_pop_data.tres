@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=5 format=3 uid="uid://cslai8nf47a1y"]
+
+[ext_resource type="Script" uid="uid://dww1nmt4qnxhj" path="res://enemy_abilities/enemy_attack.gd" id="1_ove5y"]
+[ext_resource type="Script" uid="uid://by7144upelc2t" path="res://enemy_data/enemy_data.gd" id="2_6a056"]
+[ext_resource type="PackedScene" uid="uid://xhcshi3s7we1" path="res://scenes/visuals/blue_pop_visuals.tscn" id="3_6a056"]
+
+[sub_resource type="Resource" id="Resource_ove5y"]
+script = ExtResource("1_ove5y")
+name = "Mana"
+range = 3
+cooldown = 3
+type = 4
+damage = 0
+mana_amount = 2
+mana_targets = 2
+metadata/_custom_type_script = "uid://dww1nmt4qnxhj"
+
+[resource]
+script = ExtResource("2_6a056")
+id = "blue_pop"
+display_name = "Pop"
+move_range = 3
+abilities = Array[ExtResource("1_ove5y")]([SubResource("Resource_ove5y")])
+visual_scene = ExtResource("3_6a056")
+metadata/_custom_type_script = "uid://by7144upelc2t"
