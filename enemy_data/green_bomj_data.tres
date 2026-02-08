@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="EnemyData" load_steps=6 format=3 uid="uid://dnxcnkrra62pp"]
+[gd_resource type="Resource" script_class="EnemyData" format=3 uid="uid://dnxcnkrra62pp"]
 
 [ext_resource type="Script" uid="uid://dww1nmt4qnxhj" path="res://enemy_abilities/enemy_attack.gd" id="1_bbqcv"]
 [ext_resource type="PackedScene" uid="uid://bfeljf0locgy8" path="res://scenes/molotov_scene.tscn" id="2_r046g"]

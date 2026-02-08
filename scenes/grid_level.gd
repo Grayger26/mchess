@@ -413,3 +413,11 @@ func clear_aoe_preview() -> void:
 		return
 	aoe_preview_cells.clear()
 	queue_redraw()
+
+
+
+func world_to_cell(pos: Vector2) -> Vector2i:
+	return Vector2i(floor(pos.x / cell_size.x), floor(pos.y / cell_size.y))
+ 
+func cell_to_world(cell: Vector2i) -> Vector2:
+	return Vector2(cell) * Vector2(cell_size)

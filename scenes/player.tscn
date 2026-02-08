@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3 uid="uid://6k21p1w33pbf"]
+[gd_scene format=3 uid="uid://6k21p1w33pbf"]
 
 [ext_resource type="Script" uid="uid://g3hxerqwbpfn" path="res://scenes/player.gd" id="1_qlg0r"]
 [ext_resource type="PackedScene" uid="uid://5romqdeuyp61" path="res://scenes/visuals/player_visuals.tscn" id="2_smehm"]
@@ -108,6 +108,9 @@ animations = [{
 "speed": 10.0
 }]
 
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_ur7pv"]
+light_mode = 1
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_60mlk"]
 atlas = ExtResource("9_ur7pv")
 region = Rect2(0, 0, 16, 16)
@@ -158,38 +161,42 @@ animations = [{
 "speed": 8.0
 }]
 
-[node name="player" type="CharacterBody2D"]
+[node name="player" type="CharacterBody2D" unique_id=1688709761]
 collision_mask = 6
 script = ExtResource("1_qlg0r")
 move_range = 5
 max_hp = 100
 
-[node name="PlayerVisuals" parent="." instance=ExtResource("2_smehm")]
+[node name="PlayerVisuals" parent="." unique_id=932216781 instance=ExtResource("2_smehm")]
 
-[node name="VisualRoot" type="Node2D" parent="."]
+[node name="VisualRoot" type="Node2D" parent="." unique_id=1754427899]
 
-[node name="AbilityComponent" type="Node" parent="."]
+[node name="AbilityComponent" type="Node" parent="." unique_id=1138727280]
 script = ExtResource("3_fjrip")
 ability_q = ExtResource("4_smehm")
 ability_w = ExtResource("5_ur7pv")
 ability_e = ExtResource("6_tuyoq")
 ability_r = ExtResource("7_fjrip")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1847043634]
 position = Vector2(7.75, 7.75)
 shape = SubResource("RectangleShape2D_tuyoq")
 
-[node name="ChainsSprite" type="AnimatedSprite2D" parent="."]
+[node name="ChainsSprite" type="AnimatedSprite2D" parent="." unique_id=40236613]
 position = Vector2(8, 8)
 sprite_frames = SubResource("SpriteFrames_60mlk")
 
-[node name="FireSprite" type="AnimatedSprite2D" parent="."]
+[node name="FireSprite" type="AnimatedSprite2D" parent="." unique_id=2013432636]
 visible = false
+material = SubResource("CanvasItemMaterial_ur7pv")
 position = Vector2(8, 8)
 scale = Vector2(0.75, 0.75)
 sprite_frames = SubResource("SpriteFrames_smehm")
 autoplay = "default"
-frame_progress = 0.41302627
+frame_progress = 0.95685667
+
+[node name="TargetMarker" type="Marker2D" parent="." unique_id=1113244703]
+position = Vector2(8, 5)
 
 [connection signal="ability_activated" from="AbilityComponent" to="." method="_on_ability_component_ability_activated"]
 [connection signal="ability_deactivated" from="AbilityComponent" to="." method="_on_ability_component_ability_deactivated"]

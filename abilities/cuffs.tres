@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="AbilityData" load_steps=3 format=3 uid="uid://0xmf5af7b0l0"]
+[gd_resource type="Resource" script_class="AbilityData" format=3 uid="uid://0xmf5af7b0l0"]
 
 [ext_resource type="PackedScene" uid="uid://cuwvh4t7xtwx3" path="res://scenes/cuffs_scene.tscn" id="1_kx0fc"]
 [ext_resource type="Script" uid="uid://dssthok6llb1d" path="res://abilities/ability_data.gd" id="2_bygdo"]
@@ -13,4 +13,5 @@ type = 3
 stun_turns = 2
 animation_name = "cuffs"
 projectile_scene = ExtResource("1_kx0fc")
+ability_icon_path = "res://resources/ui/icons/cuffs_icon.png"
 metadata/_custom_type_script = "uid://dssthok6llb1d"

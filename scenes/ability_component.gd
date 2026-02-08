@@ -17,11 +17,25 @@ var active_ability: AbilityData = null
 var cooldowns := {}
 
 
+@onready var CUFFS = load("res://abilities/cuffs.tres")
+@onready var HEAL = load("res://abilities/heal.tres")
+@onready var MOLOTOV =load("res://abilities/molotov.tres")
+@onready var PISTOL = load("res://abilities/pistol.tres")
+@onready var PUNCH = load("res://abilities/punch.tres")
+
+
+
+
 func _ready() -> void:
 	abilities.clear()
 	for a in [ability_q, ability_w, ability_e, ability_r]:
 		if a:
 			abilities.append(a)
+	
+	assign_ability(PISTOL, ability_q)
+	assign_ability(HEAL, ability_w)
+	assign_ability(MOLOTOV, ability_e)
+	assign_ability(CUFFS, ability_r)
 
 
 func activate(ability: AbilityData) -> void:
@@ -61,3 +75,28 @@ func tick_cooldowns() -> void:
 	for id in cooldowns.keys():
 		if cooldowns[id] > 0:
 			cooldowns[id] -= 1
+
+
+func assign_ability(ability: AbilityData, ability_slot: AbilityData) -> void:
+	if not ability:
+		return
+
+	if ability_slot == ability_q:
+		ability_q = ability
+	elif ability_slot == ability_w:
+		ability_w = ability
+	elif ability_slot == ability_e:
+		ability_e = ability
+	elif ability_slot == ability_r:
+		ability_r = ability
+	else:
+		push_warning("Unknown ability slot")
+		return
+
+	if not abilities.has(ability):
+		abilities.append(ability)
+
+	cooldowns.erase(ability.id)
+
+	if active_ability and active_ability != ability:
+		clear()

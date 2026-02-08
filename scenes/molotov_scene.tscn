@@ -1,8 +1,11 @@
-[gd_scene load_steps=22 format=3 uid="uid://bfeljf0locgy8"]
+[gd_scene format=3 uid="uid://bfeljf0locgy8"]
 
 [ext_resource type="Script" uid="uid://b7v2y8iqnwyew" path="res://scenes/projectile.gd" id="1_gffem"]
 [ext_resource type="Texture2D" uid="uid://cjpbg0h682m35" path="res://resources/soviet/other/bottle-Sheet.png" id="1_xcd5j"]
 [ext_resource type="Texture2D" uid="uid://0kikhe36n0us" path="res://resources/soviet/other/explosion.png" id="3_k6fd7"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_k6fd7"]
+light_mode = 1
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_gffem"]
 atlas = ExtResource("1_xcd5j")
@@ -136,10 +139,11 @@ animations = [{
 "speed": 10.0
 }]
 
-[node name="MolotovScene" type="Node2D"]
+[node name="MolotovScene" type="Node2D" unique_id=2107339006]
 script = ExtResource("1_gffem")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=2048842967]
+material = SubResource("CanvasItemMaterial_k6fd7")
 sprite_frames = SubResource("SpriteFrames_cx27o")
 animation = &"hit"
 autoplay = "fly"

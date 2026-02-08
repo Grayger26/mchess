@@ -66,3 +66,5 @@ enum TargetingType {
 
 # AoE
 @export var aoe_radius: int = 0
+
+@export var ability_icon_path : String = ""

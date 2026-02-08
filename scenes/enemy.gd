@@ -46,8 +46,8 @@ var support_used_this_turn := false
 @onready var visuals: EnemyVisuals
 @onready var hp_texture_progress_bar: TextureProgressBar = $UI/ProgressBars/HpTextureProgressBar
 @onready var mana_texture_progress_bar: TextureProgressBar = $UI/ProgressBars/ManaTextureProgressBar
-
-
+@onready var target_marker: Marker2D = $TargetMarker
+@onready var turn_manager = get_tree().get_first_node_in_group("turn_manager")
 
 var mouse_over := false
 
@@ -65,6 +65,7 @@ var fire_damage := 0
 
 # ---------- READY ----------
 func _ready() -> void:
+	turn_finished.connect(turn_manager._on_enemy_turn_finished)
 	ui.visible = false
 	chains_sprite.visible = false
 	add_to_group("enemy")
@@ -88,6 +89,11 @@ func _ready() -> void:
 
 # ---------- TURN ----------
 func start_turn() -> void:
+	if not attack_data:
+		push_warning(name, " has no attack_data, skipping turn")
+		end_turn()
+		return
+
 	await get_tree().create_timer(1.0).timeout
 	if is_turn_active:
 		return
@@ -232,11 +238,15 @@ func end_turn() -> void:
 	path_index = 0
 	velocity = Vector2.ZERO
 	turn_finished.emit(self)
+	#call_deferred("_emit_turn_finished")
 	play_visual("play_idle")
+	print("END TURN:", name)
+
 	
 	update_enemies_ui()
 	
-
+func _emit_turn_finished():
+	turn_finished.emit(self)
 
 
 # ---------- ATTACK ----------

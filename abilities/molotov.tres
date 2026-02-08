@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="AbilityData" load_steps=3 format=3 uid="uid://os3aj3vbmvkr"]
+[gd_resource type="Resource" script_class="AbilityData" format=3 uid="uid://os3aj3vbmvkr"]
 
 [ext_resource type="PackedScene" uid="uid://bfeljf0locgy8" path="res://scenes/molotov_scene.tscn" id="1_h2p5b"]
 [ext_resource type="Script" uid="uid://dssthok6llb1d" path="res://abilities/ability_data.gd" id="1_o7fv8"]
@@ -13,7 +13,7 @@ cooldown = 1
 damage = 3
 pattern = 1
 can_target_empty = true
-animation_name = "punch"
+animation_name = "molotov"
 projectile_scene = ExtResource("1_h2p5b")
 effect_damage = 3
 effect_time = 2
@@ -21,4 +21,5 @@ effect_type = 1
 effect_sprite = 1
 targeting_type = 1
 aoe_radius = 3
+ability_icon_path = "res://resources/ui/icons/molotov_icon.png"
 metadata/_custom_type_script = "uid://dssthok6llb1d"

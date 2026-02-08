@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=3 uid="uid://cg48ukqi15s5y"]
+[gd_scene format=3 uid="uid://cg48ukqi15s5y"]
 
 [ext_resource type="Script" uid="uid://c16qvm5matyj7" path="res://scenes/enemy.gd" id="1_md0e3"]
 [ext_resource type="Texture2D" uid="uid://08kafue0tht5" path="res://resources/ui/enemy_hp_mana_frames.png" id="2_c4w8v"]
@@ -108,6 +108,9 @@ animations = [{
 "speed": 10.0
 }]
 
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_xwavj"]
+light_mode = 1
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_60mlk"]
 atlas = ExtResource("6_xwavj")
 region = Rect2(0, 0, 16, 16)
@@ -158,30 +161,30 @@ animations = [{
 "speed": 8.0
 }]
 
-[node name="enemy" type="CharacterBody2D" groups=["enemy"]]
+[node name="enemy" type="CharacterBody2D" unique_id=1601587495 groups=["enemy"]]
 collision_layer = 4
 collision_mask = 7
 motion_mode = 1
 script = ExtResource("1_md0e3")
 
-[node name="Visuals" type="Node2D" parent="."]
+[node name="Visuals" type="Node2D" parent="." unique_id=1645895657]
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1775462895]
 position = Vector2(4, 4)
 centered = false
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1231266059]
 position = Vector2(7.75, 7.75)
 shape = SubResource("RectangleShape2D_md0e3")
 
-[node name="UI" type="Control" parent="."]
+[node name="UI" type="Control" parent="." unique_id=555188886]
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 mouse_filter = 1
 
-[node name="shields" type="HBoxContainer" parent="UI"]
+[node name="shields" type="HBoxContainer" parent="UI" unique_id=1524513269]
 custom_minimum_size = Vector2(50, 5)
 layout_mode = 0
 offset_left = -5.0
@@ -191,23 +194,23 @@ offset_bottom = 13.0
 theme_override_constants/separation = 10
 alignment = 1
 
-[node name="AutoHideTimer" type="Timer" parent="UI"]
+[node name="AutoHideTimer" type="Timer" parent="UI" unique_id=1116387243]
 wait_time = 1.5
 one_shot = true
 
-[node name="Mana" type="Control" parent="UI"]
+[node name="Mana" type="Control" parent="UI" unique_id=1841995144]
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 
-[node name="ProgressBars" type="Control" parent="UI"]
+[node name="ProgressBars" type="Control" parent="UI" unique_id=1050775710]
 anchors_preset = 0
 offset_top = -4.0
 offset_right = 26.0
 offset_bottom = 18.0
 mouse_filter = 1
 
-[node name="HpTextureProgressBar" type="TextureProgressBar" parent="UI/ProgressBars"]
+[node name="HpTextureProgressBar" type="TextureProgressBar" parent="UI/ProgressBars" unique_id=644949011]
 layout_mode = 0
 offset_left = -5.0
 offset_top = -17.0
@@ -217,7 +220,7 @@ value = 50.0
 texture_under = ExtResource("2_c4w8v")
 texture_progress = ExtResource("3_xwavj")
 
-[node name="ManaTextureProgressBar" type="TextureProgressBar" parent="UI/ProgressBars"]
+[node name="ManaTextureProgressBar" type="TextureProgressBar" parent="UI/ProgressBars" unique_id=673728460]
 layout_mode = 0
 offset_left = -3.0
 offset_top = -6.0
@@ -226,7 +229,7 @@ offset_bottom = -3.0
 value = 100.0
 texture_progress = ExtResource("4_nenq2")
 
-[node name="HpNumLabel" type="Label" parent="UI"]
+[node name="HpNumLabel" type="Label" parent="UI" unique_id=1762069221]
 layout_mode = 0
 offset_left = -2.9547348
 offset_top = -19.0
@@ -238,7 +241,7 @@ text = "0"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="ManaNumLabel" type="Label" parent="UI"]
+[node name="ManaNumLabel" type="Label" parent="UI" unique_id=263334788]
 layout_mode = 0
 offset_left = -2.9426084
 offset_top = -10.925802
@@ -250,23 +253,27 @@ text = "1"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="MouseTriggerArea" type="Area2D" parent="."]
+[node name="MouseTriggerArea" type="Area2D" parent="." unique_id=1479437607]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="MouseTriggerArea"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="MouseTriggerArea" unique_id=1139260126]
 position = Vector2(7.75, 7.75)
 shape = SubResource("RectangleShape2D_4ra3w")
 
-[node name="ChainsSprite" type="AnimatedSprite2D" parent="."]
+[node name="ChainsSprite" type="AnimatedSprite2D" parent="." unique_id=524671829]
 position = Vector2(8, 8)
 sprite_frames = SubResource("SpriteFrames_5uy6h")
 
-[node name="FireSprite" type="AnimatedSprite2D" parent="."]
+[node name="FireSprite" type="AnimatedSprite2D" parent="." unique_id=14662786]
 visible = false
+material = SubResource("CanvasItemMaterial_xwavj")
 position = Vector2(8, 8)
 scale = Vector2(0.75, 0.75)
 sprite_frames = SubResource("SpriteFrames_nenq2")
 autoplay = "default"
-frame_progress = 0.8038681
+frame_progress = 0.46686706
+
+[node name="TargetMarker" type="Marker2D" parent="." unique_id=1584766202]
+position = Vector2(8, 5)
 
 [connection signal="timeout" from="UI/AutoHideTimer" to="." method="_on_auto_hide_timer_timeout"]
 [connection signal="mouse_entered" from="MouseTriggerArea" to="." method="_on_mouse_trigger_area_mouse_entered"]

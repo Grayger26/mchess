@@ -29,6 +29,8 @@ var is_dead = false
 @onready var ability_bar := get_tree().get_first_node_in_group("ability_bar")
 @onready var chains_sprite: AnimatedSprite2D = $ChainsSprite
 @onready var visuals: PlayerVisuals = $PlayerVisuals
+@onready var target_marker: Marker2D = $TargetMarker
+
 
 
 # ---------- STATE ----------
@@ -413,6 +415,14 @@ func cast_ability(target_cell: Vector2i) -> void:
 	grid.clear_hover_attack_tile()
 
 	var enemy := get_enemy_at_cell(target_cell)
+	
+	# SELF ability — применяем сразу
+	if ability.pattern == AbilityData.AbilityPattern.SELF:
+		apply_ability_effect(ability, self)
+	else:
+		pending_ability = ability
+		pending_target = enemy
+		pending_target_cell = target_cell
 
 	pending_ability = ability
 	pending_target = enemy
@@ -724,3 +734,10 @@ func _spawn_projectile_to_cell(
 	else:
 		var world_pos := cell_to_world(target_cell) + cell_size * 0.5
 		projectile.setup(self, world_pos, ability)
+
+
+func _on_end_turn_button_pressed() -> void:
+	if self.is_moving():
+		return
+
+	self.force_end_turn()

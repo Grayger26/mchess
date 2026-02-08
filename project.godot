@@ -8,10 +8,14 @@
 
 config_version=5
 
+[animation]
+
+compatibility/default_parent_skeleton_in_mesh_instance_3d=true
+
 [application]
 
 config/name="mchess"
-config/features=PackedStringArray("4.5", "GL Compatibility")
+config/features=PackedStringArray("4.6", "GL Compatibility")
 config/icon="res://icon.svg"
 
 [display]
@@ -23,6 +27,8 @@ window/stretch/mode="canvas_items"
 [global_group]
 
 enemy=""
+ability_component=""
+turn_manager=""
 
 [input]
 
@@ -58,3 +64,4 @@ R={
 textures/canvas_textures/default_texture_filter=0
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
+textures/default_filters/anisotropic_filtering_level=0

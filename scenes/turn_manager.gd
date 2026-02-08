@@ -8,6 +8,9 @@ var player
 var enemies: Array = []
 var enemy_index = 0
 var current_enemy: Enemy = null
+@onready var enemy_group: EnemyGroup = $"../EnemyGroup"
+
+
 
 func _ready() -> void:
 	player = get_tree().get_first_node_in_group("player")
@@ -39,6 +42,7 @@ func start_player_turn() -> void:
 	units.append_array(get_tree().get_nodes_in_group("enemy"))
 	units.append(player)
 	player.grid.rebuild_unit_blocks(units, player)
+	
 
 	player.start_turn()
 
@@ -51,7 +55,8 @@ func _on_player_turn_finished() -> void:
 	if enemies.is_empty():
 		start_player_turn()
 		return
-
+	
+	enemy_group.spawn_enemy()
 	start_enemy_turn()
 
 func _on_player_died() -> void:
@@ -70,6 +75,8 @@ func start_enemy_turn() -> void:
 func _continue_enemy_turns() -> void:
 	# Refresh enemy list
 	enemies = get_tree().get_nodes_in_group("enemy")
+	print("ENEMY INDEX:", enemy_index, "/", enemies.size())
+
 	
 	if enemies.is_empty():
 		start_player_turn()
@@ -98,6 +105,7 @@ func _on_enemy_turn_finished(enemy: Enemy) -> void:
 	if enemy != current_enemy:
 		return
 
+
 	enemy_index += 1
 	current_enemy = null
 	_continue_enemy_turns()
@@ -119,3 +127,8 @@ func _on_enemy_died() -> void:
 			if i < enemy_index:
 				enemy_index -= 1
 			break
+
+func register_enemy(enemy: Enemy) -> void:
+	enemies.append(enemy)
+	enemy.turn_finished.connect(_on_enemy_turn_finished)
+	enemy.died.connect(_on_enemy_died)
