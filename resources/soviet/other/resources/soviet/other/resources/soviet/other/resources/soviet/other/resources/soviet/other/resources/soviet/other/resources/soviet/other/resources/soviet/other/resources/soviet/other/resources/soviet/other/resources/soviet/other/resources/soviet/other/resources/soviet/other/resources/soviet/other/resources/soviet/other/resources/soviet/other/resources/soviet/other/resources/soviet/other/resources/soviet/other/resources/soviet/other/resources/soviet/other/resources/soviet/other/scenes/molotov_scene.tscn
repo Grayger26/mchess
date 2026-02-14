@@ -1,0 +1,149 @@
+[gd_scene format=3 uid="uid://bfeljf0locgy8"]
+
+[ext_resource type="Script" uid="uid://b7v2y8iqnwyew" path="res://scenes/projectile.gd" id="1_gffem"]
+[ext_resource type="Texture2D" uid="uid://cjpbg0h682m35" path="res://resources/soviet/other/bottle-Sheet.png" id="1_xcd5j"]
+[ext_resource type="Texture2D" uid="uid://0kikhe36n0us" path="res://resources/soviet/other/explosion.png" id="3_k6fd7"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_k6fd7"]
+light_mode = 1
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gffem"]
+atlas = ExtResource("1_xcd5j")
+region = Rect2(180, 0, 20, 20)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_k6fd7"]
+atlas = ExtResource("1_xcd5j")
+region = Rect2(200, 0, 20, 20)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_18h1p"]
+atlas = ExtResource("1_xcd5j")
+region = Rect2(220, 0, 20, 20)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_juu4h"]
+atlas = ExtResource("1_xcd5j")
+region = Rect2(240, 0, 20, 20)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_43v7h"]
+atlas = ExtResource("1_xcd5j")
+region = Rect2(260, 0, 20, 20)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v3r3a"]
+atlas = ExtResource("1_xcd5j")
+region = Rect2(280, 0, 20, 20)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bdlti"]
+atlas = ExtResource("1_xcd5j")
+region = Rect2(300, 0, 20, 20)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_eii6u"]
+atlas = ExtResource("1_xcd5j")
+region = Rect2(320, 0, 20, 20)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0dyip"]
+atlas = ExtResource("3_k6fd7")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mtrt4"]
+atlas = ExtResource("3_k6fd7")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7vqbg"]
+atlas = ExtResource("3_k6fd7")
+region = Rect2(96, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_onvep"]
+atlas = ExtResource("3_k6fd7")
+region = Rect2(144, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_532l7"]
+atlas = ExtResource("3_k6fd7")
+region = Rect2(192, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uactd"]
+atlas = ExtResource("3_k6fd7")
+region = Rect2(240, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_j5wq3"]
+atlas = ExtResource("3_k6fd7")
+region = Rect2(288, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_s5mb0"]
+atlas = ExtResource("3_k6fd7")
+region = Rect2(336, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_susd5"]
+atlas = ExtResource("3_k6fd7")
+region = Rect2(384, 0, 48, 48)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_cx27o"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gffem")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_k6fd7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_18h1p")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_juu4h")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_43v7h")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v3r3a")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bdlti")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_eii6u")
+}],
+"loop": true,
+"name": &"fly",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0dyip")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mtrt4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7vqbg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_onvep")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_532l7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uactd")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_j5wq3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_s5mb0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_susd5")
+}],
+"loop": false,
+"name": &"hit",
+"speed": 10.0
+}]
+
+[node name="MolotovScene" type="Node2D" unique_id=2107339006]
+script = ExtResource("1_gffem")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=2048842967]
+material = SubResource("CanvasItemMaterial_k6fd7")
+sprite_frames = SubResource("SpriteFrames_cx27o")
+animation = &"hit"
+autoplay = "fly"

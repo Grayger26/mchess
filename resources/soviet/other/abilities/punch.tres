@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="AbilityData" format=3 uid="uid://dl2g6dptcav7q"]
+
+[ext_resource type="Script" uid="uid://dssthok6llb1d" path="res://abilities/ability_data.gd" id="1_m42wv"]
+
+[resource]
+script = ExtResource("1_m42wv")
+id = "punch"
+name = "Punch"
+cooldown = 1
+damage = 5
+animation_name = "punch"
+ability_icon_path = "res://resources/ui/icons/punch_icon.png"
+metadata/_custom_type_script = "uid://dssthok6llb1d"

@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="EnemyAttack" load_steps=2 format=3 uid="uid://n4krfi1mis22"]
+
+[ext_resource type="Script" uid="uid://dww1nmt4qnxhj" path="res://enemy_abilities/enemy_attack.gd" id="1_8dq26"]
+
+[resource]
+script = ExtResource("1_8dq26")
+name = "punch"
+damage = 2
+heal_amount = 0
+heal_targets = 0
+metadata/_custom_type_script = "uid://dww1nmt4qnxhj"

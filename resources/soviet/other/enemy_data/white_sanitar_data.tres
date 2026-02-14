@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3 uid="uid://c1a4iu73hmtun"]
+
+[ext_resource type="Script" uid="uid://dww1nmt4qnxhj" path="res://enemy_abilities/enemy_attack.gd" id="1_2uro5"]
+[ext_resource type="Script" uid="uid://by7144upelc2t" path="res://enemy_data/enemy_data.gd" id="2_tky4c"]
+[ext_resource type="PackedScene" uid="uid://cp1enge1xitb4" path="res://scenes/visuals/white_sanitar_visuals.tscn" id="3_tky4c"]
+
+[sub_resource type="Resource" id="Resource_aor5u"]
+script = ExtResource("1_2uro5")
+name = "Heal"
+range = 4
+cooldown = 3
+type = 2
+heal_amount = 3
+heal_targets = 2
+metadata/_custom_type_script = "uid://dww1nmt4qnxhj"
+
+[resource]
+script = ExtResource("2_tky4c")
+id = "white_sanitar"
+display_name = "Sanitar"
+move_range = 4
+abilities = Array[ExtResource("1_2uro5")]([SubResource("Resource_aor5u")])
+visual_scene = ExtResource("3_tky4c")
+metadata/_custom_type_script = "uid://by7144upelc2t"

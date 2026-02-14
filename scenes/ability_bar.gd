@@ -14,9 +14,16 @@ signal ability_slot_toggled(slot: String, enabled: bool)
 
 @onready var ability_component: AbilityComponent = $"../../player/AbilityComponent"
 
+@onready var q_cooldown_label: Label = $MarginContainer/HBoxContainer/QButton/CooldownLabel
+@onready var w_cooldown_label: Label = $MarginContainer/HBoxContainer/WButton/CooldownLabel
+@onready var e_cooldown_label: Label = $MarginContainer/HBoxContainer/EButton/CooldownLabel
+@onready var r_cooldown_label: Label = $MarginContainer/HBoxContainer/RButton/CooldownLabel
+
+
 
 func _ready() -> void:
 	set_up_icons()
+	set_up_tooltips()
 
 func _on_q_button_toggled(button_pressed: bool) -> void:
 	if button_pressed:
@@ -75,3 +82,60 @@ func set_up_icons():
 		r_button_icon.texture = load(ability_component.ability_r.ability_icon_path)
 	else:
 		r_button_icon.texture = null
+
+
+func set_up_tooltips():
+	q_button.tooltip_text = str(ability_component.ability_q.name) + " | " + str(ability_component.ability_q.ap_cost)
+	w_button.tooltip_text = str(ability_component.ability_w.name) + " | " + str(ability_component.ability_w.ap_cost)
+	e_button.tooltip_text = str(ability_component.ability_e.name) + " | " + str(ability_component.ability_e.ap_cost)
+	r_button.tooltip_text = str(ability_component.ability_r.name) + " | " + str(ability_component.ability_r.ap_cost)
+
+func cover_icon(icon, label):
+	icon.self_modulate = Color(1.0, 1.0, 1.0, 0.0)
+
+func show_icon(icon):
+	icon.self_modulate = Color(1.0, 1.0, 1.0, 1.0)
+
+func update_cooldowns() -> void:
+	if not ability_component:
+		return
+
+	_update_slot_cooldown(
+		ability_component.ability_q,
+		q_button_icon,
+		q_cooldown_label
+	)
+
+	_update_slot_cooldown(
+		ability_component.ability_w,
+		w_button_icon,
+		w_cooldown_label
+	)
+
+	_update_slot_cooldown(
+		ability_component.ability_e,
+		e_button_icon,
+		e_cooldown_label
+	)
+
+	_update_slot_cooldown(
+		ability_component.ability_r,
+		r_button_icon,
+		r_cooldown_label
+	)
+
+func _update_slot_cooldown(ability, icon: Sprite2D, label: Label) -> void:
+	if not ability:
+		return
+
+	var turns_left = ability_component.cooldowns.get(ability.id, 0)
+
+	if turns_left > 0:
+		# 🔒 На кулдауне
+		cover_icon(icon, label)
+		label.visible = true
+		label.text = str(turns_left)
+	else:
+		# ✅ Готова
+		show_icon(icon)
+		label.visible = false

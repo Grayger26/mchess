@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3 uid="uid://c5nd2olhmriyo"]
+
+[ext_resource type="Script" uid="uid://dww1nmt4qnxhj" path="res://enemy_abilities/enemy_attack.gd" id="1_46asr"]
+[ext_resource type="Script" uid="uid://by7144upelc2t" path="res://enemy_data/enemy_data.gd" id="2_hds47"]
+[ext_resource type="PackedScene" uid="uid://b4inbxtqdrjdx" path="res://scenes/visuals/blue_gopnik_visuals.tscn" id="3_hds47"]
+
+[sub_resource type="Resource" id="Resource_vulya"]
+script = ExtResource("1_46asr")
+cooldown = 2
+damage = 4
+heal_amount = 0
+heal_targets = 0
+metadata/_custom_type_script = "uid://dww1nmt4qnxhj"
+
+[resource]
+script = ExtResource("2_hds47")
+id = "blue_gopnik"
+display_name = "Gopnik"
+max_hp = 15
+move_range = 4
+abilities = Array[ExtResource("1_46asr")]([SubResource("Resource_vulya")])
+visual_scene = ExtResource("3_hds47")
+metadata/_custom_type_script = "uid://by7144upelc2t"

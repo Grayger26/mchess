@@ -108,6 +108,8 @@ func start_turn() -> void:
 	emit_ap()
 
 	abilities.tick_cooldowns()
+	if ability_bar:
+		ability_bar.update_cooldowns()
 
 	has_moved = false
 	state = PlayerState.MOVE
@@ -201,6 +203,7 @@ func _physics_process(_delta: float) -> void:
 
 	if global_position.distance_to(next_pos) < 1.0:
 		if ap <= 0:
+			await get_tree().create_timer(3.0).timeout
 			finish_movement()
 			return
 
@@ -212,6 +215,7 @@ func _physics_process(_delta: float) -> void:
 		path_index += 1
 
 		if ap == 0:
+			await get_tree().create_timer(5.0).timeout
 			finish_movement()
 			end_turn()
 
@@ -411,6 +415,9 @@ func cast_ability(target_cell: Vector2i) -> void:
 	emit_ap()
 
 	abilities.put_on_cooldown(ability)
+	if ability_bar:
+		ability_bar.update_cooldowns()
+
 	grid.attack_tiles.clear()
 	grid.clear_hover_attack_tile()
 
@@ -440,6 +447,7 @@ func cast_ability(target_cell: Vector2i) -> void:
 		update_highlight()
 
 	if ap <= 0:
+		await get_tree().create_timer(3.0).timeout
 		end_turn()
 	else:
 		update_highlight()

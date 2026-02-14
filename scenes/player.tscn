@@ -7,54 +7,54 @@
 [ext_resource type="Resource" uid="uid://b56bj5xnq4mar" path="res://abilities/heal.tres" id="5_ur7pv"]
 [ext_resource type="Resource" uid="uid://dl2g6dptcav7q" path="res://abilities/punch.tres" id="6_tuyoq"]
 [ext_resource type="Resource" uid="uid://0xmf5af7b0l0" path="res://abilities/cuffs.tres" id="7_fjrip"]
-[ext_resource type="Texture2D" uid="uid://mhuxy88vcjmv" path="res://resources/soviet/other/chains.png" id="8_smehm"]
+[ext_resource type="Texture2D" uid="uid://busu1q8ckogul" path="res://resources/other/chains.png" id="8_ur7pv"]
 [ext_resource type="Texture2D" uid="uid://djmurcboqp62v" path="res://resources/soviet/tilemaps/fire_tile-Sheet.png" id="9_ur7pv"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tuyoq"]
 size = Vector2(14.5, 14.5)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_ur7pv"]
-atlas = ExtResource("8_smehm")
+[sub_resource type="AtlasTexture" id="AtlasTexture_y4r1p"]
+atlas = ExtResource("8_ur7pv")
 region = Rect2(288, 0, 48, 48)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_y4r1p"]
-atlas = ExtResource("8_smehm")
+[sub_resource type="AtlasTexture" id="AtlasTexture_d2wvv"]
+atlas = ExtResource("8_ur7pv")
 region = Rect2(336, 0, 48, 48)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_d2wvv"]
-atlas = ExtResource("8_smehm")
+[sub_resource type="AtlasTexture" id="AtlasTexture_3v2ag"]
+atlas = ExtResource("8_ur7pv")
 region = Rect2(384, 0, 48, 48)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_3v2ag"]
-atlas = ExtResource("8_smehm")
-region = Rect2(0, 0, 48, 48)
-
 [sub_resource type="AtlasTexture" id="AtlasTexture_jej6c"]
-atlas = ExtResource("8_smehm")
+atlas = ExtResource("8_ur7pv")
 region = Rect2(0, 0, 48, 48)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_f1ej7"]
-atlas = ExtResource("8_smehm")
-region = Rect2(48, 0, 48, 48)
+atlas = ExtResource("8_ur7pv")
+region = Rect2(0, 0, 48, 48)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_oprun"]
-atlas = ExtResource("8_smehm")
-region = Rect2(96, 0, 48, 48)
+atlas = ExtResource("8_ur7pv")
+region = Rect2(48, 0, 48, 48)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_a8ls1"]
-atlas = ExtResource("8_smehm")
-region = Rect2(144, 0, 48, 48)
+atlas = ExtResource("8_ur7pv")
+region = Rect2(96, 0, 48, 48)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_qfm1y"]
-atlas = ExtResource("8_smehm")
-region = Rect2(192, 0, 48, 48)
+atlas = ExtResource("8_ur7pv")
+region = Rect2(144, 0, 48, 48)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_fulsm"]
-atlas = ExtResource("8_smehm")
-region = Rect2(240, 0, 48, 48)
+atlas = ExtResource("8_ur7pv")
+region = Rect2(192, 0, 48, 48)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_4r5pv"]
-atlas = ExtResource("8_smehm")
+atlas = ExtResource("8_ur7pv")
+region = Rect2(240, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ujl30"]
+atlas = ExtResource("8_ur7pv")
 region = Rect2(288, 0, 48, 48)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_60mlk"]
@@ -66,9 +66,6 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_ur7pv")
-}, {
-"duration": 1.0,
 "texture": SubResource("AtlasTexture_y4r1p")
 }, {
 "duration": 1.0,
@@ -76,15 +73,15 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_3v2ag")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jej6c")
 }],
 "loop": false,
 "name": &"remove_chains",
 "speed": 10.0
 }, {
 "frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_jej6c")
-}, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_f1ej7")
 }, {
@@ -102,6 +99,9 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_4r5pv")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ujl30")
 }],
 "loop": false,
 "name": &"set_chains",
@@ -185,6 +185,7 @@ shape = SubResource("RectangleShape2D_tuyoq")
 [node name="ChainsSprite" type="AnimatedSprite2D" parent="." unique_id=40236613]
 position = Vector2(8, 8)
 sprite_frames = SubResource("SpriteFrames_60mlk")
+animation = &"remove_chains"
 
 [node name="FireSprite" type="AnimatedSprite2D" parent="." unique_id=2013432636]
 visible = false

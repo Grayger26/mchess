@@ -1,65 +1,65 @@
-[gd_scene load_steps=14 format=3 uid="uid://urmh2vmf330h"]
+[gd_scene format=3 uid="uid://urmh2vmf330h"]
 
-[ext_resource type="Texture2D" uid="uid://y3rh64f5ojrb" path="res://resources/soviet/other/shield_anim.png" id="1_7dkic"]
 [ext_resource type="Script" uid="uid://bnwkj5mjn3liy" path="res://scenes/shield_sprite_control.gd" id="1_jm27o"]
+[ext_resource type="Texture2D" uid="uid://ekyn8jpfsspw" path="res://resources/other/shield_anim.png" id="2_jm27o"]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_5uy6h"]
-atlas = ExtResource("1_7dkic")
+[sub_resource type="AtlasTexture" id="AtlasTexture_afuqj"]
+atlas = ExtResource("2_jm27o")
 region = Rect2(0, 0, 16, 16)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_c4w8v"]
-atlas = ExtResource("1_7dkic")
+[sub_resource type="AtlasTexture" id="AtlasTexture_vuxmw"]
+atlas = ExtResource("2_jm27o")
 region = Rect2(16, 0, 16, 16)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_xwavj"]
-atlas = ExtResource("1_7dkic")
+[sub_resource type="AtlasTexture" id="AtlasTexture_x6hps"]
+atlas = ExtResource("2_jm27o")
 region = Rect2(32, 0, 16, 16)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_nenq2"]
-atlas = ExtResource("1_7dkic")
+[sub_resource type="AtlasTexture" id="AtlasTexture_0al6m"]
+atlas = ExtResource("2_jm27o")
 region = Rect2(48, 0, 16, 16)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_md484"]
-atlas = ExtResource("1_7dkic")
+[sub_resource type="AtlasTexture" id="AtlasTexture_v18hm"]
+atlas = ExtResource("2_jm27o")
 region = Rect2(64, 0, 16, 16)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_4ra3w"]
-atlas = ExtResource("1_7dkic")
+[sub_resource type="AtlasTexture" id="AtlasTexture_q7xrn"]
+atlas = ExtResource("2_jm27o")
 region = Rect2(64, 0, 16, 16)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_ipns3"]
-atlas = ExtResource("1_7dkic")
+[sub_resource type="AtlasTexture" id="AtlasTexture_13s2i"]
+atlas = ExtResource("2_jm27o")
 region = Rect2(48, 0, 16, 16)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_8qclf"]
-atlas = ExtResource("1_7dkic")
+[sub_resource type="AtlasTexture" id="AtlasTexture_ltao1"]
+atlas = ExtResource("2_jm27o")
 region = Rect2(32, 0, 16, 16)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_w8i8w"]
-atlas = ExtResource("1_7dkic")
+[sub_resource type="AtlasTexture" id="AtlasTexture_p3gri"]
+atlas = ExtResource("2_jm27o")
 region = Rect2(16, 0, 16, 16)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_otmr2"]
-atlas = ExtResource("1_7dkic")
+[sub_resource type="AtlasTexture" id="AtlasTexture_5ybfd"]
+atlas = ExtResource("2_jm27o")
 region = Rect2(0, 0, 16, 16)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_md0e3"]
 animations = [{
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_5uy6h")
+"texture": SubResource("AtlasTexture_afuqj")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_c4w8v")
+"texture": SubResource("AtlasTexture_vuxmw")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_xwavj")
+"texture": SubResource("AtlasTexture_x6hps")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_nenq2")
+"texture": SubResource("AtlasTexture_0al6m")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_md484")
+"texture": SubResource("AtlasTexture_v18hm")
 }],
 "loop": false,
 "name": &"shield_added",
@@ -67,34 +67,32 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_4ra3w")
+"texture": SubResource("AtlasTexture_q7xrn")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_ipns3")
+"texture": SubResource("AtlasTexture_13s2i")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_8qclf")
+"texture": SubResource("AtlasTexture_ltao1")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_w8i8w")
+"texture": SubResource("AtlasTexture_p3gri")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_otmr2")
+"texture": SubResource("AtlasTexture_5ybfd")
 }],
 "loop": false,
 "name": &"shield_lost",
 "speed": 10.0
 }]
 
-[node name="ShieldSpriteControl" type="Control"]
+[node name="ShieldSpriteControl" type="Control" unique_id=905742070]
 layout_mode = 3
 anchors_preset = 0
 script = ExtResource("1_jm27o")
 
-[node name="ShieldSprite" type="AnimatedSprite2D" parent="."]
+[node name="ShieldSprite" type="AnimatedSprite2D" parent="." unique_id=186863771]
 position = Vector2(-12, 8)
 sprite_frames = SubResource("SpriteFrames_md0e3")
-animation = &"shield_added"
+animation = &"shield_lost"
 autoplay = "shield_added"
-frame = 4
-frame_progress = 1.0

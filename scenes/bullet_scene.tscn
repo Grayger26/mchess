@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bw18i50wfayfy"]
 
 [ext_resource type="Script" uid="uid://dwssygy8y0rue" path="res://scenes/bullet_scene.gd" id="1_bw2vd"]
-[ext_resource type="Texture2D" uid="uid://br01pek0ul6pf" path="res://resources/soviet/other/bullet.png" id="2_x4051"]
+[ext_resource type="Texture2D" uid="uid://blbh76fy5itx3" path="res://resources/other/bullet.png" id="2_x4051"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_x4051"]
 light_mode = 1
@@ -63,5 +63,5 @@ material = SubResource("CanvasItemMaterial_x4051")
 position = Vector2(0, 4)
 scale = Vector2(2, 2)
 sprite_frames = SubResource("SpriteFrames_bw2vd")
-animation = &"fly"
+animation = &"hit"
 autoplay = "fly"

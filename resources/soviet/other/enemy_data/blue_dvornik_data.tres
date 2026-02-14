@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3 uid="uid://77tl2ufvo4od"]
+
+[ext_resource type="Script" uid="uid://dww1nmt4qnxhj" path="res://enemy_abilities/enemy_attack.gd" id="1_tg816"]
+[ext_resource type="Script" uid="uid://by7144upelc2t" path="res://enemy_data/enemy_data.gd" id="2_wmq0a"]
+[ext_resource type="PackedScene" uid="uid://bn5brrc1o83bo" path="res://scenes/visuals/blue_dvornik_visuals.tscn" id="3_wmq0a"]
+
+[sub_resource type="Resource" id="Resource_tg816"]
+script = ExtResource("1_tg816")
+name = "Sweep"
+range = 2
+damage = 4
+metadata/_custom_type_script = "uid://dww1nmt4qnxhj"
+
+[resource]
+script = ExtResource("2_wmq0a")
+id = "blue_dvornik"
+display_name = "Dvornik"
+max_hp = 12
+move_range = 3
+abilities = Array[ExtResource("1_tg816")]([SubResource("Resource_tg816")])
+visual_scene = ExtResource("3_wmq0a")
+metadata/_custom_type_script = "uid://by7144upelc2t"

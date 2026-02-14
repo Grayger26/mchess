@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="EnemyAttack" load_steps=2 format=3 uid="uid://ckp6ynr1cyndy"]
+
+[ext_resource type="Script" uid="uid://dww1nmt4qnxhj" path="res://enemy_abilities/enemy_attack.gd" id="1_dco4a"]
+
+[resource]
+script = ExtResource("1_dco4a")
+range = 3
+type = 3
+damage = 0
+heal_amount = 0
+heal_targets = 0
+shield_amount = 1
+shield_targets = 2
+metadata/_custom_type_script = "uid://dww1nmt4qnxhj"

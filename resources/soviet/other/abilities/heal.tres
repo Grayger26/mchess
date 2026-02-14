@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="AbilityData" format=3 uid="uid://b56bj5xnq4mar"]
+
+[ext_resource type="Script" uid="uid://dssthok6llb1d" path="res://abilities/ability_data.gd" id="1_kijqi"]
+
+[resource]
+script = ExtResource("1_kijqi")
+id = "heal"
+name = "Heal"
+cooldown = 3
+heal_amount = 5
+type = 1
+pattern = 4
+can_target_empty = true
+can_target_enemy = false
+can_target_player = true
+animation_name = "heal_ability"
+ability_icon_path = "res://resources/ui/icons/green_syringe.png"
+metadata/_custom_type_script = "uid://dssthok6llb1d"
