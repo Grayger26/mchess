@@ -10,6 +10,8 @@ extends DirectionalLight2D
 @export var evening_start : DateTime
 @export var transition_time : int = 30 # in minutes
 @export var time_system : TimeSystem
+@onready var street_lights: Node2D = $"../StreetLights"
+
 
 var in_transition : bool = false
 
@@ -93,7 +95,7 @@ func update(game_time : DateTime):
 	else:
 		color = color_map[current_state]
 	
-	if current_state == 3:
+	if current_state == 3 or current_state == 2:
 		lights_on()
 	else:
 		lights_off()
@@ -108,7 +110,12 @@ func update_transition(time_diff : int, next_state : DayState):
 		color = color_map[current_state].lerp(color_map[next_state], ratio)
 
 func lights_on():
-	windows.visible = true
+	if current_state == 3:
+		windows.visible = true
+	for light : PointLight2D in street_lights.get_children():
+		light.enabled = true
 
 func lights_off():
 	windows.visible = false
+	for light : PointLight2D in street_lights.get_children():
+		light.enabled = false

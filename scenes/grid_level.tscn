@@ -19,6 +19,7 @@
 [ext_resource type="Texture2D" uid="uid://cb8wrantgng03" path="res://resources/ui/watch.png" id="10_6cyto"]
 [ext_resource type="Texture2D" uid="uid://10yq8knc5bpe" path="res://resources/ui/player_progress_bars/hp_mana_frame.png" id="11_2xaav"]
 [ext_resource type="Texture2D" uid="uid://cc75v5jlyyvx" path="res://resources/ui/player_progress_bars/white_bar.png" id="12_2dodg"]
+[ext_resource type="PackedScene" uid="uid://djdr6fi6nmlqh" path="res://scenes/ui/tooltip.tscn" id="13_0s6xv"]
 [ext_resource type="Texture2D" uid="uid://snxtp4yp3unh" path="res://resources/ui/player_progress_bars/hp_bar.png" id="13_lusku"]
 [ext_resource type="Texture2D" uid="uid://dx5y387qwhlvd" path="res://resources/ui/player_progress_bars/mana_bar.png" id="14_0tp6v"]
 [ext_resource type="Texture2D" uid="uid://03yc3oufe8lq" path="res://resources/ui/player_progress_bars/xp_frame.png" id="15_lusku"]
@@ -27,11 +28,16 @@
 [ext_resource type="Shader" uid="uid://cvodo62sagiui" path="res://shaders/vhs.gdshader" id="17_lw7ol"]
 [ext_resource type="Texture2D" uid="uid://c4vsdjryfcxcb" path="res://resources/ui/buttons/end_turn_button_normal.png" id="18_gm0r8"]
 [ext_resource type="Texture2D" uid="uid://d1eb1c02dsbol" path="res://resources/ui/buttons/end_turn_button_pressed.png" id="19_yrd5p"]
+[ext_resource type="Script" uid="uid://dmfc3kltfyeak" path="res://scenes/active_effects.gd" id="20_yrd5p"]
+[ext_resource type="PackedScene" uid="uid://cbwyp43d43u24" path="res://scenes/ui/active_effect.tscn" id="21_oriij"]
 [ext_resource type="Script" uid="uid://bufsakx1xowlg" path="res://scenes/enemy_group.gd" id="22_oriij"]
 [ext_resource type="Script" uid="uid://dy80ob6cwxt22" path="res://scenes/timeSystem/world_light.gd" id="26_ia35c"]
 [ext_resource type="Script" uid="uid://b8eqw6iex5sst" path="res://scenes/timeSystem/date_time.gd" id="27_lw7ol"]
 [ext_resource type="Script" uid="uid://yrk68l2lyr6" path="res://scenes/timeSystem/time_system.gd" id="28_q3tqg"]
+[ext_resource type="Resource" uid="uid://dnxcnkrra62pp" path="res://enemy_data/green_bomj_data.tres" id="30_oriij"]
+[ext_resource type="Resource" uid="uid://chxrp2p5pf6cr" path="res://enemy_data/grey_ment_data.tres" id="31_iuldh"]
 [ext_resource type="Texture2D" uid="uid://bexkktfji5cov" path="res://resources/other/light_1.png" id="32_sasqr"]
+[ext_resource type="Resource" uid="uid://bcwdy1gyxlflg" path="res://enemy_data/brown_dog.tres" id="33_qvaoq"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_cchoa"]
 texture = ExtResource("2_oa7px")
@@ -3587,7 +3593,7 @@ metadata/_custom_type_script = "uid://b8eqw6iex5sst"
 
 [sub_resource type="Resource" id="Resource_sasqr"]
 script = ExtResource("27_lw7ol")
-hours = 21
+hours = 22
 metadata/_custom_type_script = "uid://b8eqw6iex5sst"
 
 [sub_resource type="Resource" id="Resource_gm0r8"]
@@ -3602,7 +3608,8 @@ metadata/_custom_type_script = "uid://b8eqw6iex5sst"
 
 [sub_resource type="Resource" id="Resource_ia35c"]
 script = ExtResource("27_lw7ol")
-hours = 20
+minutes = 30
+hours = 17
 metadata/_custom_type_script = "uid://b8eqw6iex5sst"
 
 [node name="GridLevel" type="Node2D" unique_id=1140881547 groups=["grid"]]
@@ -3735,6 +3742,14 @@ text = "0"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="Q_Tooltip" parent="CanvasLayer/AbilityBar/MarginContainer/HBoxContainer/QButton" unique_id=622606391 instance=ExtResource("13_0s6xv")]
+visible = false
+layout_mode = 1
+offset_left = -21.249996
+offset_top = -59.999985
+offset_right = -21.369999
+offset_bottom = -59.999985
+
 [node name="WButton" type="TextureButton" parent="CanvasLayer/AbilityBar/MarginContainer/HBoxContainer" unique_id=1098340200]
 custom_minimum_size = Vector2(25, 0)
 layout_mode = 2
@@ -3759,6 +3774,14 @@ theme_override_colors/font_color = Color(0.21770102, 0.21770105, 0.21770105, 1)
 text = "0"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="W_Tooltip" parent="CanvasLayer/AbilityBar/MarginContainer/HBoxContainer/WButton" unique_id=2068214649 instance=ExtResource("13_0s6xv")]
+visible = false
+layout_mode = 1
+offset_left = -21.249996
+offset_top = -59.999985
+offset_right = -21.369999
+offset_bottom = -59.999985
 
 [node name="EButton" type="TextureButton" parent="CanvasLayer/AbilityBar/MarginContainer/HBoxContainer" unique_id=1742941408]
 custom_minimum_size = Vector2(25, 0)
@@ -3785,6 +3808,14 @@ text = "0"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="E_Tooltip" parent="CanvasLayer/AbilityBar/MarginContainer/HBoxContainer/EButton" unique_id=28676384 instance=ExtResource("13_0s6xv")]
+visible = false
+layout_mode = 1
+offset_left = -21.249996
+offset_top = -59.999985
+offset_right = -21.369999
+offset_bottom = -59.999985
+
 [node name="RButton" type="TextureButton" parent="CanvasLayer/AbilityBar/MarginContainer/HBoxContainer" unique_id=476067751]
 custom_minimum_size = Vector2(25, 0)
 layout_mode = 2
@@ -3809,6 +3840,14 @@ theme_override_colors/font_color = Color(0.21770102, 0.21770105, 0.21770105, 1)
 text = "0"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="R_Tooltip" parent="CanvasLayer/AbilityBar/MarginContainer/HBoxContainer/RButton" unique_id=116234889 instance=ExtResource("13_0s6xv")]
+visible = false
+layout_mode = 1
+offset_left = -21.249996
+offset_top = -59.999985
+offset_right = -21.369999
+offset_bottom = -59.999985
 
 [node name="Stats" type="Control" parent="CanvasLayer" unique_id=687835934 groups=["player_stats"]]
 layout_mode = 3
@@ -3903,6 +3942,7 @@ offset_right = 280.2857
 offset_bottom = 42.285698
 scale = Vector2(0.35, 0.35)
 theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.45490196)
 text = "0"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -3914,9 +3954,34 @@ offset_top = 21.99999
 offset_right = 280.2857
 offset_bottom = 56.28576
 scale = Vector2(0.35, 0.35)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.45490196)
 text = "0"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="ActiveEffects" type="Control" parent="CanvasLayer" unique_id=54720979]
+layout_mode = 3
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 172.0
+offset_top = 66.0
+offset_right = 310.0
+offset_bottom = 83.0
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("20_yrd5p")
+active_effect = ExtResource("21_oriij")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/ActiveEffects" unique_id=817724155]
+layout_mode = 0
+offset_left = -143.0
+offset_top = 2.999998
+offset_right = 560.3333
+offset_bottom = 25.999998
+scale = Vector2(0.6, 0.6)
+mouse_filter = 2
+alignment = 1
 
 [node name="BattleButtons" type="Control" parent="CanvasLayer" unique_id=1165274728]
 layout_mode = 3
@@ -4031,6 +4096,18 @@ script = ExtResource("22_oriij")
 position = Vector2(800, 176)
 enemy_data = ExtResource("8_gyror")
 
+[node name="enemy2" parent="EnemyGroup" unique_id=1601587495 instance=ExtResource("7_yxi66")]
+position = Vector2(441, 273)
+enemy_data = ExtResource("30_oriij")
+
+[node name="enemy3" parent="EnemyGroup" unique_id=178724660 instance=ExtResource("7_yxi66")]
+position = Vector2(441, 333)
+enemy_data = ExtResource("31_iuldh")
+
+[node name="enemy4" parent="EnemyGroup" unique_id=1023029936 instance=ExtResource("7_yxi66")]
+position = Vector2(381, 301)
+enemy_data = ExtResource("33_qvaoq")
+
 [node name="TurnManager" type="Node" parent="." unique_id=289092337 groups=["turn_manager"]]
 script = ExtResource("8_vxsa8")
 
@@ -4057,102 +4134,119 @@ tics_per_second = 60
 
 [node name="StreetLight" type="PointLight2D" parent="StreetLights" unique_id=1964381246]
 position = Vector2(72, 101)
+enabled = false
 color = Color(0.92941177, 0.827451, 0.25490198, 1)
 energy = 1.5
 texture = ExtResource("32_sasqr")
 
 [node name="StreetLight2" type="PointLight2D" parent="StreetLights" unique_id=1012188721]
 position = Vector2(71, 213)
+enabled = false
 color = Color(0.92941177, 0.827451, 0.25490198, 1)
 energy = 1.5
 texture = ExtResource("32_sasqr")
 
 [node name="StreetLight3" type="PointLight2D" parent="StreetLights" unique_id=450322662]
 position = Vector2(439, 101)
+enabled = false
 color = Color(0.92941177, 0.827451, 0.25490198, 1)
 energy = 1.5
 texture = ExtResource("32_sasqr")
 
 [node name="StreetLight4" type="PointLight2D" parent="StreetLights" unique_id=1995017158]
 position = Vector2(471, 212)
+enabled = false
 color = Color(0.92941177, 0.827451, 0.25490198, 1)
 energy = 1.5
 texture = ExtResource("32_sasqr")
 
 [node name="StreetLight5" type="PointLight2D" parent="StreetLights" unique_id=124980413]
 position = Vector2(519, 293)
+enabled = false
 color = Color(0.92941177, 0.827451, 0.25490198, 1)
 energy = 1.5
 texture = ExtResource("32_sasqr")
 
 [node name="StreetLight10" type="PointLight2D" parent="StreetLights" unique_id=992131889]
 position = Vector2(775, 293)
+enabled = false
 color = Color(0.92941177, 0.827451, 0.25490198, 1)
 energy = 1.5
 texture = ExtResource("32_sasqr")
 
 [node name="StreetLight15" type="PointLight2D" parent="StreetLights" unique_id=1606534752]
 position = Vector2(600, 102)
+enabled = false
 color = Color(0.92941177, 0.827451, 0.25490198, 1)
 energy = 1.5
 texture = ExtResource("32_sasqr")
 
 [node name="StreetLight16" type="PointLight2D" parent="StreetLights" unique_id=881984148]
 position = Vector2(968, 149)
+enabled = false
 color = Color(0.92941177, 0.827451, 0.25490198, 1)
 energy = 1.5
 texture = ExtResource("32_sasqr")
 
 [node name="StreetLight17" type="PointLight2D" parent="StreetLights" unique_id=2082504613]
 position = Vector2(823, 213)
+enabled = false
 color = Color(0.92941177, 0.827451, 0.25490198, 1)
 energy = 1.5
 texture = ExtResource("32_sasqr")
 
 [node name="StreetLight11" type="PointLight2D" parent="StreetLights" unique_id=539389371]
 position = Vector2(263, 149)
+enabled = false
 color = Color(0.92941177, 0.827451, 0.25490198, 1)
 energy = 1.5
 texture = ExtResource("32_sasqr")
 
 [node name="StreetLight6" type="PointLight2D" parent="StreetLights" unique_id=2085356708]
 position = Vector2(407, 357)
+enabled = false
 color = Color(0.92941177, 0.827451, 0.25490198, 1)
 energy = 1.5
 texture = ExtResource("32_sasqr")
 
 [node name="StreetLight7" type="PointLight2D" parent="StreetLights" unique_id=790464072]
 position = Vector2(88, 359)
+enabled = false
 color = Color(0.92941177, 0.827451, 0.25490198, 1)
 energy = 1.5
 texture = ExtResource("32_sasqr")
 
 [node name="StreetLight8" type="PointLight2D" parent="StreetLights" unique_id=240587717]
 position = Vector2(487, 517)
+enabled = false
 color = Color(0.92941177, 0.827451, 0.25490198, 1)
 energy = 1.5
 texture = ExtResource("32_sasqr")
 
 [node name="StreetLight9" type="PointLight2D" parent="StreetLights" unique_id=1256574865]
 position = Vector2(807, 517)
+enabled = false
 color = Color(0.92941177, 0.827451, 0.25490198, 1)
 energy = 1.5
 texture = ExtResource("32_sasqr")
 
 [node name="StreetLight12" type="PointLight2D" parent="StreetLights" unique_id=281669566]
 position = Vector2(408, 741)
+enabled = false
 color = Color(0.92941177, 0.827451, 0.25490198, 1)
 energy = 1.5
 texture = ExtResource("32_sasqr")
 
 [node name="StreetLight13" type="PointLight2D" parent="StreetLights" unique_id=454207757]
 position = Vector2(136, 693)
+enabled = false
 color = Color(0.92941177, 0.827451, 0.25490198, 1)
 energy = 1.5
 texture = ExtResource("32_sasqr")
 
 [node name="StreetLight14" type="PointLight2D" parent="StreetLights" unique_id=832873848]
 position = Vector2(248, 548)
+enabled = false
 color = Color(0.92941177, 0.827451, 0.25490198, 1)
 energy = 1.5
 texture = ExtResource("32_sasqr")
@@ -4160,13 +4254,24 @@ texture = ExtResource("32_sasqr")
 [connection signal="ap_changed" from="player" to="CanvasLayer/Stats" method="_on_player_ap_changed"]
 [connection signal="turn_finished" from="player" to="TurnManager" method="_on_player_turn_finished"]
 [connection signal="ability_slot_toggled" from="CanvasLayer/AbilityBar" to="player" method="_on_ability_bar_ability_slot_toggled"]
+[connection signal="mouse_entered" from="CanvasLayer/AbilityBar/MarginContainer/HBoxContainer/QButton" to="CanvasLayer/AbilityBar" method="_on_q_button_mouse_entered"]
+[connection signal="mouse_exited" from="CanvasLayer/AbilityBar/MarginContainer/HBoxContainer/QButton" to="CanvasLayer/AbilityBar" method="_on_q_button_mouse_exited"]
 [connection signal="toggled" from="CanvasLayer/AbilityBar/MarginContainer/HBoxContainer/QButton" to="CanvasLayer/AbilityBar" method="_on_q_button_toggled"]
+[connection signal="mouse_entered" from="CanvasLayer/AbilityBar/MarginContainer/HBoxContainer/WButton" to="CanvasLayer/AbilityBar" method="_on_w_button_mouse_entered"]
+[connection signal="mouse_exited" from="CanvasLayer/AbilityBar/MarginContainer/HBoxContainer/WButton" to="CanvasLayer/AbilityBar" method="_on_w_button_mouse_exited"]
 [connection signal="toggled" from="CanvasLayer/AbilityBar/MarginContainer/HBoxContainer/WButton" to="CanvasLayer/AbilityBar" method="_on_w_button_toggled"]
+[connection signal="mouse_entered" from="CanvasLayer/AbilityBar/MarginContainer/HBoxContainer/EButton" to="CanvasLayer/AbilityBar" method="_on_e_button_mouse_entered"]
+[connection signal="mouse_exited" from="CanvasLayer/AbilityBar/MarginContainer/HBoxContainer/EButton" to="CanvasLayer/AbilityBar" method="_on_e_button_mouse_exited"]
 [connection signal="toggled" from="CanvasLayer/AbilityBar/MarginContainer/HBoxContainer/EButton" to="CanvasLayer/AbilityBar" method="_on_e_button_toggled"]
+[connection signal="mouse_entered" from="CanvasLayer/AbilityBar/MarginContainer/HBoxContainer/RButton" to="CanvasLayer/AbilityBar" method="_on_r_button_mouse_entered"]
+[connection signal="mouse_exited" from="CanvasLayer/AbilityBar/MarginContainer/HBoxContainer/RButton" to="CanvasLayer/AbilityBar" method="_on_r_button_mouse_exited"]
 [connection signal="toggled" from="CanvasLayer/AbilityBar/MarginContainer/HBoxContainer/RButton" to="CanvasLayer/AbilityBar" method="_on_r_button_toggled"]
 [connection signal="button_up" from="CanvasLayer/BattleButtons/EndTurnButton" to="player" method="_on_end_turn_button_button_up"]
 [connection signal="pressed" from="CanvasLayer/BattleButtons/EndTurnButton" to="player" method="_on_end_turn_button_pressed"]
 [connection signal="turn_finished" from="EnemyGroup/enemy" to="TurnManager" method="_on_enemy_turn_finished"]
+[connection signal="turn_finished" from="EnemyGroup/enemy2" to="TurnManager" method="_on_enemy_turn_finished"]
+[connection signal="turn_finished" from="EnemyGroup/enemy3" to="TurnManager" method="_on_enemy_turn_finished"]
+[connection signal="turn_finished" from="EnemyGroup/enemy4" to="TurnManager" method="_on_enemy_turn_finished"]
 [connection signal="updated" from="TimeSystem" to="CanvasLayer/Watch" method="_on_time_system_updated"]
 
 [editable path="player"]

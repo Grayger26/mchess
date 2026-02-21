@@ -1,0 +1,51 @@
+[gd_scene format=3 uid="uid://djdr6fi6nmlqh"]
+
+[ext_resource type="Script" uid="uid://ojc8hu3psdf1" path="res://scenes/ui/tooltip.gd" id="1_mtwet"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vn8p1"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.1, 0.1, 0.1, 0.6)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.5882353, 0.6039216, 0.64705884, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+
+[node name="Tooltip" type="Control" unique_id=622606391]
+layout_mode = 3
+anchor_right = 0.094000004
+anchor_bottom = 0.1
+offset_right = -0.12000275
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(2, 2)
+script = ExtResource("1_mtwet")
+
+[node name="PanelContainer" type="PanelContainer" parent="." unique_id=1815454372]
+layout_mode = 0
+offset_right = 45.0
+offset_bottom = 27.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_vn8p1")
+
+[node name="RichTextLabel" type="RichTextLabel" parent="." unique_id=1889428591]
+layout_mode = 0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = 138.66666
+offset_bottom = 75.333336
+scale = Vector2(0.3, 0.3)
+bbcode_enabled = true
+text = "[b]Name[/b]
+[img]res://resources/ui/damage_icon.png[/img] 3  [img]res://resources/ui/heal_icon.png[/img] 0 [img]res://resources/ui/time_icon.png[/img] 0
+[img]res://resources/ui/energy_icon_2.png[/img] 1  [img]res://resources/ui/cooldown_icon.png[/img] 3"
+fit_content = true
+horizontal_alignment = 1
+vertical_alignment = 1

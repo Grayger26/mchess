@@ -30,7 +30,11 @@ var is_dead = false
 @onready var chains_sprite: AnimatedSprite2D = $ChainsSprite
 @onready var visuals: PlayerVisuals = $PlayerVisuals
 @onready var target_marker: Marker2D = $TargetMarker
+@onready var active_effects_container: Control = $"../CanvasLayer/ActiveEffects"
 
+var active_effect_nodes := {} 
+# ключ: effect_type
+# значение: инстанс ActiveEffect
 
 
 # ---------- STATE ----------
@@ -94,15 +98,21 @@ func start_turn() -> void:
 	# ❗ Проверка стана
 	if stun_turns > 0:
 		stun_turns -= 1
+
+		_update_effect_label(
+			AbilityData.EffectType.STUN,
+			stun_turns
+		)
+
 		print(name, " is STUNNED, turns left:", stun_turns)
+
+		if stun_turns <= 0:
+			_hide_stun()
+			_remove_effect_ui(AbilityData.EffectType.STUN)
+
 		call_deferred("end_turn")
 		return
-	
-	if stun_turns > 0:
-		stun_turns -= 1
-		print("PLAYER STUNNED, turns left:", stun_turns)
-		call_deferred("_finish_stunned_turn")
-		return
+
 
 	ap = max_ap
 	emit_ap()
@@ -576,6 +586,13 @@ func apply_stun(turns: int) -> void:
 		_show_stun()
 
 	print(name, "STUNNED FOR", stun_turns, "TURNS")
+	
+		# 🔥 ДОБАВЛЯЕМ В UI
+	_add_or_update_effect_ui(
+		AbilityData.EffectType.STUN,
+		stun_turns,
+		"res://resources/ui/cuffs_effect_icon.png"
+	)
 
 func _show_stun():
 	chains_sprite.visible = true
@@ -663,8 +680,21 @@ func update_enemies_ui():
 
 func apply_status_effect(effect_type: int, damage: int, turns: int) -> void:
 	match effect_type:
-		EnemyAttack.EffectType.DAMAGE:
-			_apply_fire_effect_from_values(damage, turns)
+
+		AbilityData.EffectType.DAMAGE:
+			fire_damage = damage
+			fire_turns = max(fire_turns, turns)
+
+			fire_sprite.visible = true
+			fire_sprite.play("fire")
+
+			_add_or_update_effect_ui(
+				effect_type,
+				fire_turns,
+				"res://resources/ui/fire_icon.png"
+			)
+
+
 
 func _apply_fire_effect(attack: EnemyAttack) -> void:
 	fire_damage = attack.effect_damage
@@ -688,19 +718,19 @@ func _apply_start_turn_effects() -> void:
 		take_damage(fire_damage)
 
 		fire_turns -= 1
+		_update_effect_label(EnemyAttack.EffectType.DAMAGE, fire_turns)
 
 		if fire_turns <= 0:
 			_remove_fire_effect()
 
+
 func _remove_fire_effect() -> void:
 	fire_damage = 0
 	fire_turns = 0
-
-	#fire_sprite.play("extinguish")
-	#await fire_sprite.animation_finished
 	fire_sprite.visible = false
 
-	print(name, "fire effect ended")
+	_remove_effect_ui(EnemyAttack.EffectType.DAMAGE)
+
 
 func apply_status_effect_from_ability(ability: AbilityData) -> void:
 	match ability.effect_type:
@@ -749,3 +779,33 @@ func _on_end_turn_button_pressed() -> void:
 		return
 
 	self.force_end_turn()
+
+func _add_or_update_effect_ui(effect_type: int, turns: int, icon_path: String) -> void:
+	if active_effect_nodes.has(effect_type):
+		_update_effect_label(effect_type, turns)
+		return
+
+	var effect_node = active_effects_container.construct_active_effect(
+		icon_path,
+		turns,
+		effect_type
+	)
+
+	active_effect_nodes[effect_type] = effect_node
+
+func _update_effect_label(effect_type: int, turns: int) -> void:
+	if not active_effect_nodes.has(effect_type):
+		return
+
+	var node = active_effect_nodes[effect_type]
+	var label = node.get_node("HBoxContainer/Label")
+
+	label.text = str(max(turns, 1))
+
+func _remove_effect_ui(effect_type: int) -> void:
+	if not active_effect_nodes.has(effect_type):
+		return
+
+	var node = active_effect_nodes[effect_type]
+	node.queue_free()
+	active_effect_nodes.erase(effect_type)

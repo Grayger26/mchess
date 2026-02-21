@@ -45,7 +45,8 @@ enum AbilityPattern {
 enum EffectType {
 	NONE,
 	DAMAGE,
-	MANA_STEAL
+	MANA_STEAL,
+	STUN
 }
 
 enum EffectSprite {

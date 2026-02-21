@@ -1,0 +1,43 @@
+[gd_scene format=3 uid="uid://cbwyp43d43u24"]
+
+[ext_resource type="Texture2D" uid="uid://c5rj2pjiygylg" path="res://resources/ui/fire_icon.png" id="1_i057j"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gm0r8"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.1, 0.1, 0.1, 0.6)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.5882353, 0.6039216, 0.64705884, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 3
+corner_detail = 5
+
+[node name="ActiveEffect" type="PanelContainer" unique_id=971688433]
+theme_override_styles/panel = SubResource("StyleBoxFlat_gm0r8")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=1510320775]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 0
+alignment = 1
+
+[node name="EffectIcon" type="TextureRect" parent="HBoxContainer" unique_id=1718476652]
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("1_i057j")
+
+[node name="Label" type="Label" parent="HBoxContainer" unique_id=513108849]
+custom_minimum_size = Vector2(16, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.45490196)
+text = "0"
+horizontal_alignment = 1
+vertical_alignment = 1

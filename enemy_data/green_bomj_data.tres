@@ -16,6 +16,7 @@ heal_targets = 0
 projectile_scene = ExtResource("2_r046g")
 effect_damage = 1
 effect_time = 3
+effect_ui_icon_path = "res://resources/ui/fire_icon.png"
 effect_type = 1
 effect_sprite = 1
 metadata/_custom_type_script = "uid://dww1nmt4qnxhj"

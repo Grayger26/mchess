@@ -46,7 +46,8 @@ enum AttackType {
 enum EffectType {
 	NONE,
 	DAMAGE,
-	MANA_STEAL
+	MANA_STEAL,
+	STUN
 }
 
 enum EffectSprite {
@@ -54,6 +55,7 @@ enum EffectSprite {
 	Fire
 }
 
+@export var effect_ui_icon_path : String
 
 @export var effect_type: EffectType = EffectType.NONE
 @export var effect_sprite: EffectSprite = EffectSprite.none

@@ -20,6 +20,12 @@ signal ability_slot_toggled(slot: String, enabled: bool)
 @onready var r_cooldown_label: Label = $MarginContainer/HBoxContainer/RButton/CooldownLabel
 
 
+@onready var q_tooltip: Control = $MarginContainer/HBoxContainer/QButton/Q_Tooltip
+@onready var w_tooltip: Control = $MarginContainer/HBoxContainer/WButton/W_Tooltip
+@onready var e_tooltip: Control = $MarginContainer/HBoxContainer/EButton/E_Tooltip
+@onready var r_tooltip: Control = $MarginContainer/HBoxContainer/RButton/R_Tooltip
+
+
 
 func _ready() -> void:
 	set_up_icons()
@@ -85,10 +91,18 @@ func set_up_icons():
 
 
 func set_up_tooltips():
-	q_button.tooltip_text = str(ability_component.ability_q.name) + " | " + str(ability_component.ability_q.ap_cost)
-	w_button.tooltip_text = str(ability_component.ability_w.name) + " | " + str(ability_component.ability_w.ap_cost)
-	e_button.tooltip_text = str(ability_component.ability_e.name) + " | " + str(ability_component.ability_e.ap_cost)
-	r_button.tooltip_text = str(ability_component.ability_r.name) + " | " + str(ability_component.ability_r.ap_cost)
+	if ability_component.ability_q:
+		q_tooltip.set_ability(ability_component.ability_q)
+
+	if ability_component.ability_w:
+		w_tooltip.set_ability(ability_component.ability_w)
+
+	if ability_component.ability_e:
+		e_tooltip.set_ability(ability_component.ability_e)
+
+	if ability_component.ability_r:
+		r_tooltip.set_ability(ability_component.ability_r)
+
 
 func cover_icon(icon, label):
 	icon.self_modulate = Color(1.0, 1.0, 1.0, 0.0)
@@ -139,3 +153,34 @@ func _update_slot_cooldown(ability, icon: Sprite2D, label: Label) -> void:
 		# ✅ Готова
 		show_icon(icon)
 		label.visible = false
+
+
+func _on_q_button_mouse_entered() -> void:
+	show_tooltip(q_tooltip)
+
+func _on_w_button_mouse_entered() -> void:
+	show_tooltip(w_tooltip)
+
+func _on_e_button_mouse_entered() -> void:
+	show_tooltip(e_tooltip)
+
+func _on_r_button_mouse_entered() -> void:
+	show_tooltip(r_tooltip)
+
+func show_tooltip(tooltip):
+	tooltip.visible = true
+
+func hide_tooltip(tooltip):
+	tooltip.visible = false
+
+func _on_q_button_mouse_exited() -> void:
+	hide_tooltip(q_tooltip)
+
+func _on_w_button_mouse_exited() -> void:
+	hide_tooltip(w_tooltip)
+
+func _on_e_button_mouse_exited() -> void:
+	hide_tooltip(e_tooltip)
+
+func _on_r_button_mouse_exited() -> void:
+	hide_tooltip(r_tooltip)

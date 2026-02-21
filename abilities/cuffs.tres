@@ -13,5 +13,6 @@ type = 3
 stun_turns = 2
 animation_name = "cuffs"
 projectile_scene = ExtResource("1_kx0fc")
+effect_time = 2
 ability_icon_path = "res://resources/ui/icons/cuffs_icon.png"
 metadata/_custom_type_script = "uid://dssthok6llb1d"

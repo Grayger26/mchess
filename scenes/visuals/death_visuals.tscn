@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://b80kddbdc054p"]
+
+[ext_resource type="Script" uid="uid://b78vuyja7f78a" path="res://scenes/visuals/enemy_visuals.gd" id="1_qg3jt"]
+
+[node name="DeathVisuals" type="Node2D" unique_id=1532476351]
+script = ExtResource("1_qg3jt")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=671836380]
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=62693339]

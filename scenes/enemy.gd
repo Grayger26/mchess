@@ -529,7 +529,7 @@ func apply_stun(turns: int) -> void:
 		_show_stun()
 
 	print(name, "STUNNED FOR", stun_turns, "TURNS")
-
+	
 func _show_stun():
 	chains_sprite.visible = true
 	chains_sprite.play("set_chains")
@@ -783,6 +783,8 @@ func setup_from_data(data: EnemyData) -> void:
 	mana_texture_progress_bar.max_value = max_mana
 	mana_texture_progress_bar.value = mana
 	mana_num_label.text = str(mana) + " / " + str(max_mana)
+	hp_texture_progress_bar.max_value = max_hp
+	hp_texture_progress_bar.value = hp
 
 func _setup_visuals(scene: PackedScene) -> void:
 	if not scene:

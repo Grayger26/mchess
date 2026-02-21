@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="EnemyAttack" load_steps=2 format=3 uid="uid://cl7x7kvhge6de"]
+[gd_resource type="Resource" script_class="EnemyAttack" format=3 uid="uid://cl7x7kvhge6de"]
 
 [ext_resource type="Script" uid="uid://dww1nmt4qnxhj" path="res://enemy_abilities/enemy_attack.gd" id="1_sjht6"]
 
