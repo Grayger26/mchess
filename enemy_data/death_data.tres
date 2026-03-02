@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3 uid="uid://y4y702evhhya"]
+
+[ext_resource type="Script" uid="uid://dww1nmt4qnxhj" path="res://enemy_abilities/enemy_attack.gd" id="1_nqwj6"]
+[ext_resource type="Script" uid="uid://by7144upelc2t" path="res://enemy_data/enemy_data.gd" id="2_o1w4j"]
+[ext_resource type="PackedScene" uid="uid://b80kddbdc054p" path="res://scenes/visuals/death_visuals.tscn" id="3_o1w4j"]
+
+[sub_resource type="Resource" id="Resource_nqwj6"]
+script = ExtResource("1_nqwj6")
+name = "Death"
+range = 2
+ap_cost = 10
+cooldown = 10
+damage = 500
+heal_amount = 0
+heal_targets = 0
+metadata/_custom_type_script = "uid://dww1nmt4qnxhj"
+
+[resource]
+script = ExtResource("2_o1w4j")
+id = "death"
+display_name = "Death"
+max_hp = 3
+max_ap = 10
+abilities = Array[ExtResource("1_nqwj6")]([SubResource("Resource_nqwj6")])
+visual_scene = ExtResource("3_o1w4j")
+metadata/_custom_type_script = "uid://by7144upelc2t"

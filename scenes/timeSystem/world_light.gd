@@ -95,9 +95,10 @@ func update(game_time : DateTime):
 	else:
 		color = color_map[current_state]
 	
-	if current_state == 3 or current_state == 2:
+	
+	if time_system.date_time.hours == 20:
 		lights_on()
-	else:
+	elif time_system.date_time.hours == 5:
 		lights_off()
 	
 
@@ -110,10 +111,9 @@ func update_transition(time_diff : int, next_state : DayState):
 		color = color_map[current_state].lerp(color_map[next_state], ratio)
 
 func lights_on():
-	if current_state == 3:
-		windows.visible = true
+	windows.visible = true
 	for light : PointLight2D in street_lights.get_children():
-		light.enabled = true
+			light.enabled = true
 
 func lights_off():
 	windows.visible = false

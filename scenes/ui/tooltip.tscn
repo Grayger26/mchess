@@ -1,6 +1,8 @@
 [gd_scene format=3 uid="uid://djdr6fi6nmlqh"]
 
 [ext_resource type="Script" uid="uid://ojc8hu3psdf1" path="res://scenes/ui/tooltip.gd" id="1_mtwet"]
+[ext_resource type="FontFile" uid="uid://dabacn8om8qnh" path="res://resources/fonts/ari_w9500/ari-w9500-bold.ttf" id="2_kv0sd"]
+[ext_resource type="FontFile" uid="uid://xeywjwiquluw" path="res://resources/fonts/ari_w9500/ari-w9500-condensed-display.ttf" id="3_o3msy"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vn8p1"]
 content_margin_left = 0.0
@@ -38,10 +40,15 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_vn8p1")
 [node name="RichTextLabel" type="RichTextLabel" parent="." unique_id=1889428591]
 layout_mode = 0
 offset_left = 2.0
-offset_top = 2.0
+offset_top = 1.5
 offset_right = 138.66666
-offset_bottom = 75.333336
+offset_bottom = 81.5
 scale = Vector2(0.3, 0.3)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.6627451)
+theme_override_constants/line_separation = 4
+theme_override_constants/shadow_offset_y = 1
+theme_override_fonts/normal_font = ExtResource("2_kv0sd")
+theme_override_fonts/bold_font = ExtResource("3_o3msy")
 bbcode_enabled = true
 text = "[b]Name[/b]
 [img]res://resources/ui/damage_icon.png[/img] 3  [img]res://resources/ui/heal_icon.png[/img] 0 [img]res://resources/ui/time_icon.png[/img] 0

@@ -1,0 +1,26 @@
+[gd_resource type="Resource" script_class="EnemyData" format=3 uid="uid://cadj2fkxhxhka"]
+
+[ext_resource type="Script" uid="uid://dww1nmt4qnxhj" path="res://enemy_abilities/enemy_attack.gd" id="1_xscgt"]
+[ext_resource type="Script" uid="uid://by7144upelc2t" path="res://enemy_data/enemy_data.gd" id="2_0ccrc"]
+[ext_resource type="PackedScene" uid="uid://pwv12vtig45e" path="res://scenes/visuals/pioner_visuals.tscn" id="3_0ccrc"]
+
+[sub_resource type="Resource" id="Resource_sbhts"]
+script = ExtResource("1_xscgt")
+range = 3
+cooldown = 4
+type = 3
+heal_amount = 0
+heal_targets = 0
+shield_amount = 1
+shield_targets = 3
+metadata/_custom_type_script = "uid://dww1nmt4qnxhj"
+
+[resource]
+script = ExtResource("2_0ccrc")
+id = "pioner"
+display_name = "Pioner"
+max_hp = 7
+move_range = 4
+abilities = Array[ExtResource("1_xscgt")]([SubResource("Resource_sbhts")])
+visual_scene = ExtResource("3_0ccrc")
+metadata/_custom_type_script = "uid://by7144upelc2t"

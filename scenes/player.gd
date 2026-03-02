@@ -111,6 +111,9 @@ func start_turn() -> void:
 			_remove_effect_ui(AbilityData.EffectType.STUN)
 
 		call_deferred("end_turn")
+		abilities.tick_cooldowns()
+		if ability_bar:
+			ability_bar.update_cooldowns()
 		return
 
 
@@ -246,6 +249,7 @@ func emit_ap() -> void:
 
 # ---------- HP ----------
 func take_damage(amount: int) -> void:
+	print("PLAYER TAKES DAMAGE:", amount)
 	hp = max(hp - amount, 0)
 	emit_hp()
 	visuals.play_hurt()
@@ -399,9 +403,6 @@ func cancel_ability() -> void:
 	
 	grid.attack_tiles.clear()
 	grid.clear_hover_attack_tile()
-
-	if ability_bar:
-		ability_bar.cancel_all_buttons()
 
 func get_ability_targets() -> Array[Vector2i]:
 	return grid.get_highlighted_cells()

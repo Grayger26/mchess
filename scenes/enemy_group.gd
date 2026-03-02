@@ -19,6 +19,7 @@ var active_enemies: Array[Enemy] = []
 @onready var GREY_MENT_DATA = load("res://enemy_data/grey_ment_data.tres") 
 @onready var WHITE_SANITAR_DATA = load("res://enemy_data/white_sanitar_data.tres") 
 
+
 @onready var enemy_data_list = [
 	BLUE_DVORNIK_DATA, 
 	BLUE_GOPNIK_DATA, 
@@ -109,7 +110,7 @@ func get_spawn_position_outside_viewport() -> Vector2:
 	var camera_pos = camera.global_position
 	
 	# Distance outside viewport (in pixels)
-	var spawn_distance = 5.0  
+	var spawn_distance = 15.0  
 	
 	var spawn_pos: Vector2
 	

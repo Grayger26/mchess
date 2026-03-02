@@ -31,45 +31,65 @@ func _ready() -> void:
 	set_up_icons()
 	set_up_tooltips()
 
+
+var _is_cancelling := false
+
 func _on_q_button_toggled(button_pressed: bool) -> void:
+	if _is_cancelling:
+		return
 	if button_pressed:
 		cancel_other_buttons(q_button)
+		ability_slot_toggled.emit("W", false)
+		ability_slot_toggled.emit("E", false)
+		ability_slot_toggled.emit("R", false)
 	ability_slot_toggled.emit("Q", button_pressed)
 
 
 func _on_w_button_toggled(button_pressed: bool) -> void:
+	if _is_cancelling:
+		return
 	if button_pressed:
 		cancel_other_buttons(w_button)
+		ability_slot_toggled.emit("Q", false)
+		ability_slot_toggled.emit("E", false)
+		ability_slot_toggled.emit("R", false)
 	ability_slot_toggled.emit("W", button_pressed)
 
 
 func _on_e_button_toggled(button_pressed: bool) -> void:
+	if _is_cancelling:
+		return
 	if button_pressed:
 		cancel_other_buttons(e_button)
+		ability_slot_toggled.emit("Q", false)
+		ability_slot_toggled.emit("W", false)
+		ability_slot_toggled.emit("R", false)
 	ability_slot_toggled.emit("E", button_pressed)
 
 
 func _on_r_button_toggled(button_pressed: bool) -> void:
+	if _is_cancelling:
+		return
 	if button_pressed:
 		cancel_other_buttons(r_button)
+		ability_slot_toggled.emit("Q", false)
+		ability_slot_toggled.emit("W", false)
+		ability_slot_toggled.emit("E", false)
 	ability_slot_toggled.emit("R", button_pressed)
 
 
 func cancel_other_buttons(except_button = null) -> void:
-	var buttons = [q_button, w_button, e_button, r_button]
-	
-	for button in buttons:
+	_is_cancelling = true
+	for button in [q_button, w_button, e_button, r_button]:
 		if button != except_button and button.button_pressed:
 			button.button_pressed = false
-
+	_is_cancelling = false
 
 func cancel_all_buttons() -> void:
-	var buttons = [q_button, w_button, e_button, r_button]
-	
-	for button in buttons:
-		if button.button_pressed:
-			button.button_pressed = false
-
+	_is_cancelling = true
+	for button in [q_button, w_button, e_button, r_button]:
+		button.button_pressed = false
+	_is_cancelling = false
 
 func set_up_icons():
 	if ability_component.ability_q != null:

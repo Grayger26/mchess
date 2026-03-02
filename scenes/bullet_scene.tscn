@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bw18i50wfayfy"]
 
-[ext_resource type="Script" uid="uid://dwssygy8y0rue" path="res://scenes/bullet_scene.gd" id="1_bw2vd"]
+[ext_resource type="Script" uid="uid://b7v2y8iqnwyew" path="res://scenes/projectile.gd" id="1_x4051"]
 [ext_resource type="Texture2D" uid="uid://blbh76fy5itx3" path="res://resources/other/bullet.png" id="2_x4051"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_x4051"]
@@ -55,7 +55,7 @@ animations = [{
 }]
 
 [node name="BulletScene" type="Node2D" unique_id=1387858286]
-script = ExtResource("1_bw2vd")
+script = ExtResource("1_x4051")
 speed = 100.0
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1140133863]

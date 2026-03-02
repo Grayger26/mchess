@@ -29,6 +29,7 @@ window/stretch/mode="canvas_items"
 enemy=""
 ability_component=""
 turn_manager=""
+camera=""
 
 [input]
 

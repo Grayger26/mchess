@@ -101,27 +101,32 @@ func _apply_aoe_on_cell():
 	if not _has_prop(ability, "aoe_radius"):
 		return
 
-	var impact_cell := _world_to_cell_using_grid(global_position, grid)
+	var impact_cell: Vector2i
+
+	if target_entity and "current_cell" in target_entity:
+		impact_cell = Vector2i(target_entity.current_cell)
+	else:
+		impact_cell = _world_to_cell_using_grid(global_position, grid)
+
 	var aoe_cells = grid.get_cells_in_range_for_ability(
-	impact_cell,
-	ability.aoe_radius
-)
+		impact_cell,
+		ability.aoe_radius
+	)
 
 	for enemy in get_tree().get_nodes_in_group("enemy"):
 		if enemy.is_dead or enemy.is_dying:
 			continue
 
-		if enemy.current_cell not in aoe_cells:
+		var enemy_cell := Vector2i(enemy.current_cell)
+
+		# 🔥 ВАЖНО: центральная цель всегда получает эффект
+		if enemy == target_entity:
+			_apply_aoe_effect(enemy)
 			continue
 
-		if _has_prop(ability, "damage") and ability.damage > 0:
-			enemy.take_damage(ability.damage)
-
-		if _has_prop(ability, "effect_type") \
-		and ability.effect_type != AbilityData.EffectType.NONE:
-			if enemy.has_method("apply_status_effect_from_ability"):
-				enemy.apply_status_effect_from_ability(ability)
-
+		# остальные — по радиусу
+		if enemy_cell in aoe_cells:
+			_apply_aoe_effect(enemy)
 
 func _get_units_in_aoe(center: Vector2i, radius: int) -> Array:
 	var result := []
@@ -135,6 +140,15 @@ func _get_units_in_aoe(center: Vector2i, radius: int) -> Array:
 			result.append(enemy)
 
 	return result
+
+func _apply_aoe_effect(enemy):
+	if _has_prop(ability, "damage") and ability.damage > 0:
+		enemy.take_damage(ability.damage)
+
+	if _has_prop(ability, "effect_type") \
+	and ability.effect_type != AbilityData.EffectType.NONE:
+		if enemy.has_method("apply_status_effect_from_ability"):
+			enemy.apply_status_effect_from_ability(ability)
 
 
 # ---------- HELPERS ----------

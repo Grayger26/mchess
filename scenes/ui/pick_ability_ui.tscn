@@ -1,0 +1,112 @@
+[gd_scene format=3 uid="uid://dvp4r8t5fwai2"]
+
+[ext_resource type="Texture2D" uid="uid://cyf4w22jlwpsk" path="res://resources/ui/icons/pick_ability_icon_frame.png" id="1_q66wq"]
+[ext_resource type="Texture2D" uid="uid://bpoiqvujau35m" path="res://resources/ui/icons/cuffs_icon.png" id="2_5c361"]
+[ext_resource type="Texture2D" uid="uid://c4vsdjryfcxcb" path="res://resources/ui/buttons/end_turn_button_normal.png" id="3_ecfv1"]
+[ext_resource type="Texture2D" uid="uid://d1eb1c02dsbol" path="res://resources/ui/buttons/end_turn_button_pressed.png" id="4_ishhm"]
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_wnf8h"]
+load_path = "res://.godot/imported/frames.png-aa1d77dcda1cda96c966672931b91d1d.ctex"
+
+[node name="PickAbilityUI" type="Control" unique_id=986632107]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1329749944]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_top = 50
+theme_override_constants/margin_right = 50
+theme_override_constants/margin_bottom = 50
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer" unique_id=1550512159]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="AbilityContainer" type="NinePatchRect" parent="MarginContainer/HBoxContainer" unique_id=1562015791]
+custom_minimum_size = Vector2(100, 30)
+layout_mode = 2
+texture = SubResource("CompressedTexture2D_wnf8h")
+patch_margin_left = 10
+patch_margin_top = 10
+patch_margin_right = 10
+patch_margin_bottom = 10
+axis_stretch_horizontal = 1
+axis_stretch_vertical = 1
+
+[node name="IconContainer" type="Control" parent="MarginContainer/HBoxContainer/AbilityContainer" unique_id=139660821]
+anchors_preset = 0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 90.0
+offset_bottom = 76.0
+
+[node name="icon_frame" type="TextureRect" parent="MarginContainer/HBoxContainer/AbilityContainer/IconContainer" unique_id=491740368]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_q66wq")
+
+[node name="AbilityIcon" type="TextureRect" parent="MarginContainer/HBoxContainer/AbilityContainer/IconContainer" unique_id=1170013013]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -24.0
+offset_top = -24.0
+offset_right = 24.0
+offset_bottom = 24.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_5c361")
+
+[node name="DescriptionContainer" type="Control" parent="MarginContainer/HBoxContainer/AbilityContainer" unique_id=1826244543]
+anchors_preset = 0
+offset_left = 10.0
+offset_top = 74.0
+offset_right = 90.0
+offset_bottom = 123.0
+
+[node name="ButtonContainer" type="Control" parent="MarginContainer/HBoxContainer/AbilityContainer" unique_id=357346414]
+anchors_preset = 0
+offset_left = 10.0
+offset_top = 130.0
+offset_right = 90.0
+offset_bottom = 154.0
+
+[node name="TextureButton" type="TextureButton" parent="MarginContainer/HBoxContainer/AbilityContainer/ButtonContainer" unique_id=2022380155]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.2
+anchor_top = -0.042000003
+anchor_right = 0.8
+anchor_bottom = 0.95800006
+offset_top = 0.008000135
+offset_right = 32.0
+offset_bottom = 16.008
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.6, 0.6)
+texture_normal = ExtResource("3_ecfv1")
+texture_pressed = ExtResource("4_ishhm")

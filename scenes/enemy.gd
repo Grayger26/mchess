@@ -48,6 +48,9 @@ var support_used_this_turn := false
 @onready var mana_texture_progress_bar: TextureProgressBar = $UI/ProgressBars/ManaTextureProgressBar
 @onready var target_marker: Marker2D = $TargetMarker
 @onready var turn_manager = get_tree().get_first_node_in_group("turn_manager")
+@onready var level_system: LevelSystem = $"../../LevelSystem"
+@onready var camera : MainCamera = get_tree().get_first_node_in_group("camera") 
+
 
 var mouse_over := false
 
@@ -301,10 +304,10 @@ func perform_attack() -> void:
 	mana = 0
 	_update_mana_ui()
 
-
-		# Если есть projectile — он сам применит эффект
-	if not attack_data.projectile_scene:
-		apply_ability_effect(attack_data, target_player)
+#
+		## Если есть projectile — он сам применит эффект
+	#if not attack_data.projectile_scene:
+		#apply_ability_effect(attack_data, target_player)
 
 
 	print("Enemy uses", attack_data.name, "on player")
@@ -462,6 +465,7 @@ func take_damage(amount: int) -> void:
 		return
 	
 	play_visual("play_hurt")
+	camera.screen_shake(4, 0.1)
 
 	hp = max(hp - amount, 0)
 	hp_num_label.text = str(hp) + " / " + str(max_hp)
@@ -491,6 +495,8 @@ func die() -> void:
 	# СРАЗУ убираем из логики
 	remove_from_group("enemy")
 	action_in_progress = true
+	
+	level_system.increase_current_xp()
 
 	play_visual("play_death")
 	print("ENEMY DIED")
@@ -867,7 +873,7 @@ func _on_visuals_cast_fire():
 		attack_data.projectile_scene
 	)
 
-	if attack_data.projectile_scene:
+	if attack_data.projectile_scene != null:
 		_spawn_projectile(attack_data, target_player)
 	else:
 		apply_ability_effect(attack_data, target_player)

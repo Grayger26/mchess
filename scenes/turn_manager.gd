@@ -8,6 +8,8 @@ var player
 var enemies: Array = []
 var enemy_index = 0
 var current_enemy: Enemy = null
+var num_of_enemies_to_spawn = 3
+
 @onready var enemy_group: EnemyGroup = $"../EnemyGroup"
 
 
@@ -56,7 +58,9 @@ func _on_player_turn_finished() -> void:
 		start_player_turn()
 		return
 	
-	enemy_group.spawn_enemy()
+	for i in num_of_enemies_to_spawn:
+		enemy_group.spawn_enemy()
+	
 	start_enemy_turn()
 
 func _on_player_died() -> void:

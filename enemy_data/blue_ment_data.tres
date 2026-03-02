@@ -8,7 +8,7 @@
 [sub_resource type="Resource" id="Resource_dutws"]
 script = ExtResource("1_wrccu")
 name = "pistol"
-range = 3
+range = 5
 ap_cost = 2
 cooldown = 2
 heal_amount = 0
