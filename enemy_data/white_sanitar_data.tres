@@ -10,8 +10,9 @@ name = "Heal"
 range = 4
 cooldown = 3
 type = 2
+damage = 0
+targets = 3
 heal_amount = 3
-heal_targets = 2
 metadata/_custom_type_script = "uid://dww1nmt4qnxhj"
 
 [resource]

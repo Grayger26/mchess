@@ -12,7 +12,6 @@ range = 5
 cooldown = 5
 damage = 3
 heal_amount = 0
-heal_targets = 0
 projectile_scene = ExtResource("2_r046g")
 effect_damage = 1
 effect_time = 3

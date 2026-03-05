@@ -10,9 +10,8 @@ name = "Death"
 range = 2
 ap_cost = 10
 cooldown = 10
-damage = 500
+damage = 99
 heal_amount = 0
-heal_targets = 0
 metadata/_custom_type_script = "uid://dww1nmt4qnxhj"
 
 [resource]

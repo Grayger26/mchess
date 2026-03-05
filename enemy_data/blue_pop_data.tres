@@ -11,8 +11,8 @@ range = 3
 cooldown = 3
 type = 4
 damage = 0
+targets = 2
 mana_amount = 2
-mana_targets = 2
 metadata/_custom_type_script = "uid://dww1nmt4qnxhj"
 
 [resource]

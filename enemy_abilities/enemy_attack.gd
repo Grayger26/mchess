@@ -23,21 +23,21 @@ enum AttackType {
 # STUN
 @export var stun_turns: int = 0
 
+
+
+@export var targets: int = 0
 # HEAL
 @export var heal_amount: int = 1
-@export var heal_targets: int = 1
 # 1 — одиночное лечение
 # >1 — массовое
 
 # SHIELD
 @export var shield_amount: int = 0
-@export var shield_targets: int = 0
+
 
 @export var projectile_scene: PackedScene
 
 @export var mana_amount: int = 0
-@export var mana_targets: int = 0
-
 
 # EFFECTS
 @export var effect_damage: int = 0

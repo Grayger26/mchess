@@ -8,7 +8,7 @@ var player
 var enemies: Array = []
 var enemy_index = 0
 var current_enemy: Enemy = null
-var num_of_enemies_to_spawn = 3
+@export var num_of_enemies_to_spawn = 1
 
 @onready var enemy_group: EnemyGroup = $"../EnemyGroup"
 

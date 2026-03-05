@@ -50,6 +50,8 @@ var support_used_this_turn := false
 @onready var turn_manager = get_tree().get_first_node_in_group("turn_manager")
 @onready var level_system: LevelSystem = $"../../LevelSystem"
 @onready var camera : MainCamera = get_tree().get_first_node_in_group("camera") 
+@onready var enemy_number: EnemyNumberControl = $"../../CanvasLayer/EnemyNumber"
+@onready var enemy_info_panel: EnemyInfoPanel = $"../../CanvasLayer/EnemyInfoPanel"
 
 
 var mouse_over := false
@@ -70,6 +72,7 @@ var fire_damage := 0
 func _ready() -> void:
 	turn_finished.connect(turn_manager._on_enemy_turn_finished)
 	ui.visible = false
+	enemy_info_panel.visible = false
 	chains_sprite.visible = false
 	add_to_group("enemy")
 	
@@ -87,6 +90,7 @@ func _ready() -> void:
 	hp_num_label.text = str(hp) + " / " + str(max_hp)
 	emit_hp()
 	play_visual("play_idle")
+	enemy_number.update()
 
 
 
@@ -506,6 +510,7 @@ func die() -> void:
 
 	is_dead = true
 	died.emit()
+	enemy_number.update()
 
 	var grid_node := get_tree().get_first_node_in_group("grid")
 	var player = get_tree().get_first_node_in_group("player")
@@ -584,10 +589,10 @@ func get_heal_targets() -> Array:
 		return a.hp < b.hp
 	)
 
-	if attack_data.heal_targets <= 1:
+	if attack_data.targets <= 1:
 		return [allies[0]]
 
-	return allies.slice(0, min(attack_data.heal_targets, allies.size()))
+	return allies.slice(0, min(attack_data.targets, allies.size()))
 
 func perform_heal(targets: Array) -> void:
 	action_in_progress = true
@@ -639,10 +644,12 @@ func _on_auto_hide_timer_timeout() -> void:
 func _on_mouse_trigger_area_mouse_entered() -> void:
 	mouse_over = true
 	show_ui()
+	show_info_panel()
 
 func _on_mouse_trigger_area_mouse_exited() -> void:
 	mouse_over = false
 	ui.visible = false
+	enemy_info_panel.visible = false
 
 func add_shields(amount: int) -> void:
 	if is_dying or is_dead:
@@ -713,7 +720,7 @@ func get_shield_targets() -> Array:
 	)
 
 	var result := []
-	var max_targets = min(attack_data.shield_targets, candidates.size())
+	var max_targets = min(attack_data.targets, candidates.size())
 
 	for i in range(max_targets):
 		var target
@@ -939,10 +946,10 @@ func get_mana_targets() -> Array:
 		return a.attack_cooldown > b.attack_cooldown
 	)
 
-	if attack_data.mana_targets <= 1:
+	if attack_data.targets <= 1:
 		return [candidates[0]]
 
-	return candidates.slice(0, min(attack_data.mana_targets, candidates.size()))
+	return candidates.slice(0, min(attack_data.targets, candidates.size()))
 
 func perform_mana(targets: Array) -> void:
 	if attack_cooldown > 0:
@@ -1060,3 +1067,18 @@ func _apply_fire_effect_from_values(dmg: int, time: int) -> void:
 		" turns, dmg:",
 		fire_damage
 	)
+
+
+func show_info_panel():
+	enemy_info_panel.visible = true
+	enemy_info_panel.set_info_values(
+		move_range,
+		attack_data.damage, 
+		attack_data.range, 
+		attack_data.effect_time, 
+		attack_data.heal_amount, 
+		attack_data.shield_amount, 
+		attack_data.stun_turns, 
+		attack_data.targets, 
+		attack_data.mana_amount
+		)
