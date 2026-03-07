@@ -12,6 +12,7 @@ var current_enemy: Enemy = null
 
 @onready var enemy_group: EnemyGroup = $"../EnemyGroup"
 
+@onready var enemies_turn_indicator: EnemiesTurnIndicator = $"../CanvasLayer/EnemiesTurnIndicator"
 
 
 func _ready() -> void:
@@ -45,7 +46,9 @@ func start_player_turn() -> void:
 	units.append(player)
 	player.grid.rebuild_unit_blocks(units, player)
 	
-
+	if enemies_turn_indicator.panel.modulate != Color("ffffff00"):
+		enemies_turn_indicator.fade_panel(true)
+	
 	player.start_turn()
 
 func _on_player_turn_finished() -> void:
@@ -60,6 +63,8 @@ func _on_player_turn_finished() -> void:
 	
 	for i in num_of_enemies_to_spawn:
 		enemy_group.spawn_enemy()
+		
+	enemies_turn_indicator.fade_panel(false)
 	
 	start_enemy_turn()
 

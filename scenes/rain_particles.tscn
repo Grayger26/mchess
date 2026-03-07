@@ -3,7 +3,6 @@
 [ext_resource type="Texture2D" uid="uid://bctioq7r60j0l" path="res://resources/other/raindrop.png" id="1_yawtp"]
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_rgb75"]
-lifetime_randomness = 1.0
 particle_flag_disable_z = true
 emission_shape = 3
 emission_box_extents = Vector3(300, 1, 1)
@@ -18,9 +17,9 @@ color = Color(0.14117648, 0.5647059, 0.654902, 0.70980394)
 
 [node name="rain" type="GPUParticles2D" unique_id=1657571182]
 position = Vector2(220, -36)
-amount = 500
+amount = 700
 texture = ExtResource("1_yawtp")
-lifetime = 6.0
+lifetime = 9.0
 preprocess = 5.0
 trail_lifetime = 0.01
 process_material = SubResource("ParticleProcessMaterial_rgb75")
