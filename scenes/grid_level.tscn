@@ -3954,7 +3954,7 @@ tile_map_data = PackedByteArray("AAAsAAoAAAAAAAQAAAAsAAsAAAAAAAUAAAAsAAwAAAAAAAY
 tile_set = SubResource("TileSet_yrd5p")
 
 [node name="player" parent="." unique_id=29184873 groups=["player"] instance=ExtResource("2_rb7e7")]
-position = Vector2(419, 306)
+position = Vector2(400.70068, 126.33411)
 motion_mode = 1
 move_range = 10
 max_ap = 100
@@ -4812,7 +4812,6 @@ enemy_data = ExtResource("54_47pt0")
 
 [node name="TurnManager" type="Node" parent="." unique_id=289092337 groups=["turn_manager"]]
 script = ExtResource("8_vxsa8")
-num_of_enemies_to_spawn = 2
 
 [node name="WorldLight" type="DirectionalLight2D" parent="." unique_id=1112897046 node_paths=PackedStringArray("time_system")]
 blend_mode = 2
